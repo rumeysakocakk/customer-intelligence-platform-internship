@@ -21,3 +21,9 @@ env/
 # OS Files
 .DS_Store
 Thumbs.db
+
+data/processed/X_train.csv
+data/processed/X_test.csv
+data/processed/y_train.csv
+data/processed/y_test.csv
+data/processed/modeling_dataset.csv
