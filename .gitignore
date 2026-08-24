@@ -27,3 +27,7 @@ data/processed/X_test.csv
 data/processed/y_train.csv
 data/processed/y_test.csv
 data/processed/modeling_dataset.csv
+
+# CatBoost training logs
+catboost_info/
+notebooks/catboost_info/

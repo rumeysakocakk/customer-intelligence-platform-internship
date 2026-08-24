@@ -1,0 +1,2559 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Customer Intelligence Platform - müşteri memnuniyeti tahmin ve analiz paneli"
+    >
+
+    <title>
+        {% block title %}
+        Customer Intelligence Platform
+        {% endblock %}
+    </title>
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         ICONS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+
+    <!-- =====================================================
+         APPLICATION CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}"
+    >
+
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body
+    data-user-role="{{ (current_role or 'viewer')|lower }}"
+    data-user-role-label="{{ current_role_label|default('Kullanıcı', true) }}"
+>
+
+
+{% set user_name = current_user.full_name if current_user else "Kullanıcı" %}
+{% set user_email = current_user.email if current_user else "" %}
+{% set user_role = current_role_label|default("Kullanıcı", true) %}
+{% set role_key = (current_role or "viewer")|lower %}
+{% set organization_name = current_organization.name if current_organization else "Organizasyon" %}
+
+{% set user_name_parts = user_name.split() %}
+
+{% if user_name_parts|length > 1 %}
+    {% set user_initials = (user_name_parts[0][0] ~ user_name_parts[-1][0])|upper %}
+{% elif user_name_parts|length == 1 and user_name_parts[0] %}
+    {% set user_initials = user_name_parts[0][:2]|upper %}
+{% else %}
+    {% set user_initials = "CI" %}
+{% endif %}
+
+
+<div class="app-shell">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+
+        <!-- BRAND -->
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    Customer
+                </strong>
+
+                <span>
+                    Intelligence Platform
+                </span>
+
+            </div>
+
+
+            <button
+                class="mobile-close"
+                id="close-menu"
+                type="button"
+                aria-label="Menüyü kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PLATFORM NAVIGATION
+        ================================================== -->
+
+        <div class="sidebar-section">
+
+            <p class="sidebar-label">
+                PLATFORM
+            </p>
+
+
+            <nav
+                class="nav-list"
+                aria-label="Ana menü"
+            >
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="nav-item {% if active_page == 'dashboard' %}active{% endif %}"
+                >
+                    <i class="fa-solid fa-chart-pie"></i>
+
+                    <span>
+                        Genel Bakış
+                    </span>
+                </a>
+
+
+                <!-- NEW PREDICTION -->
+                {% if role_key in ["owner", "admin", "operator"] %}
+                <a
+                    href="{{ url_for('prediction_page') }}"
+                    class="nav-item {% if active_page == 'prediction' %}active{% endif %}"
+                >
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                    <span>
+                        Yeni Tahmin
+                    </span>
+                </a>
+                {% endif %}
+
+
+                <!-- HISTORY -->
+
+                <a
+                    href="{{ url_for('history') }}"
+                    class="nav-item {% if active_page == 'history' %}active{% endif %}"
+                >
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    <span>
+                        Tahmin Geçmişi
+                    </span>
+                </a>
+
+
+                <!-- ANALYTICS -->
+                {% if role_key in ["owner", "admin", "analyst", "viewer"] %}
+                <a
+                    href="{{ url_for('analytics') }}"
+                    class="nav-item {% if active_page == 'analytics' %}active{% endif %}"
+                >
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    <span>
+                        Veri Analizi
+                    </span>
+                </a>
+                {% endif %}
+
+
+                <!-- MODEL PERFORMANCE -->
+                {% if role_key in ["owner", "admin", "analyst"] %}
+                <a
+                    href="{{ url_for('model_performance') }}"
+                    class="nav-item {% if active_page == 'model_performance' %}active{% endif %}"
+                >
+                    <i class="fa-solid fa-gauge-high"></i>
+
+                    <span>
+                        Model Performansı
+                    </span>
+                </a>
+                {% endif %}
+
+
+                <!-- REPORTS -->
+                {% if role_key in ["owner", "admin", "analyst", "operator", "viewer"] %}
+                <a
+                    href="{{ url_for('reports') }}"
+                    class="nav-item {% if active_page == 'reports' %}active{% endif %}"
+                >
+                    <i class="fa-regular fa-file-lines"></i>
+
+                    <span>
+                        Raporlar
+                    </span>
+                </a>
+                {% endif %}
+
+
+                <!-- AI ASSISTANT -->
+                {% if role_key in ["owner", "admin", "analyst", "operator"] %}
+                <a
+                    href="{{ url_for('assistant_page') }}"
+                    class="nav-item {% if active_page == 'assistant' %}active{% endif %}"
+                    aria-label="AI Asistan"
+                >
+                    <i class="fa-solid fa-sparkles"></i>
+
+                    <span>
+                        AI Asistan
+                    </span>
+                </a>
+                {% endif %}
+
+            </nav>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MANAGEMENT
+        ================================================== -->
+
+        <div class="sidebar-section workspace-links">
+
+            <p class="sidebar-label">
+                YÖNETİM
+            </p>
+
+
+            <nav
+                class="nav-list"
+                aria-label="Yönetim menüsü"
+            >
+
+
+                <button
+                    class="nav-item role-workspace-button"
+                    id="role-workspace-button"
+                    type="button"
+                    data-role="{{ role_key }}"
+                >
+                    {% if role_key == "owner" %}
+                        <i class="fa-solid fa-building-shield"></i>
+                        <span>Owner Merkezi</span>
+                    {% elif role_key == "admin" %}
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Yönetim Merkezi</span>
+                    {% elif role_key == "analyst" %}
+                        <i class="fa-solid fa-chart-column"></i>
+                        <span>Analist Alanı</span>
+                    {% elif role_key == "operator" %}
+                        <i class="fa-solid fa-headset"></i>
+                        <span>Operasyon Alanı</span>
+                    {% else %}
+                        <i class="fa-regular fa-eye"></i>
+                        <span>İzleme Alanı</span>
+                    {% endif %}
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    id="settings-button"
+                    type="button"
+                >
+                    <i class="fa-solid fa-gear"></i>
+
+                    <span>
+                        Ayarlar
+                    </span>
+                </button>
+
+
+                <button
+                    class="nav-item"
+                    id="help-button"
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-controls="help-modal"
+                >
+                    <i class="fa-regular fa-circle-question"></i>
+
+                    <span>
+                        Yardım
+                    </span>
+                </button>
+
+            </nav>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SYSTEM STATUS
+        ================================================== -->
+
+        <div class="system-status">
+
+            <div class="status-header">
+
+                <span class="status-dot"></span>
+
+                <strong>
+                    Sistem Aktif
+                </strong>
+
+            </div>
+
+
+            <p>
+                Tahmin servisi kullanıma hazır.
+            </p>
+
+
+            <div class="status-meta">
+
+                <span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Servis durumu
+                </span>
+
+
+                <strong>
+                    Çevrimiçi
+                </strong>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+
+                <button
+                    class="mobile-menu"
+                    id="open-menu"
+                    type="button"
+                    aria-label="Menüyü aç"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+
+                <!-- BREADCRUMB -->
+
+                <div class="breadcrumbs">
+
+                    <span>
+                        Customer Intelligence
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <strong>
+
+                        {% block breadcrumb %}
+
+                            {% if active_page == "dashboard" %}
+                                Genel Bakış
+
+                            {% elif active_page == "prediction" %}
+                                Yeni Tahmin
+
+                            {% elif active_page == "history" %}
+                                Tahmin Geçmişi
+
+                            {% elif active_page == "analytics" %}
+                                Veri Analizi
+
+                            {% elif active_page == "model_performance" %}
+                                Model Performansı
+
+                            {% elif active_page == "reports" %}
+                                Raporlar
+
+                            {% elif active_page == "assistant" %}
+                                AI Asistan
+
+                            {% else %}
+                                Genel Bakış
+                            {% endif %}
+
+                        {% endblock %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TOPBAR ACTIONS
+            ================================================== -->
+
+            <div class="topbar-actions">
+
+
+                <!-- SEARCH -->
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        id="global-search"
+                        type="search"
+                        placeholder="Ara..."
+                        aria-label="Panelde ara"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <!-- =================================================
+                     NOTIFICATION CENTER
+                ================================================== -->
+
+                <div class="notification-wrapper">
+
+                    <button
+                        class="topbar-icon"
+                        id="notification-button"
+                        type="button"
+                        title="Bildirimler"
+                        aria-label="Bildirimleri görüntüle"
+                        aria-expanded="false"
+                        aria-controls="notification-panel"
+                    >
+                        <i class="fa-regular fa-bell"></i>
+
+                        <span
+                            class="notification-dot"
+                            id="notification-dot"
+                            aria-hidden="true"
+                        ></span>
+                    </button>
+
+
+                    <section
+                        class="notification-panel"
+                        id="notification-panel"
+                        aria-hidden="true"
+                    >
+
+                        <!-- HEADER -->
+
+                        <div class="notification-panel-header">
+
+                            <div>
+
+                                <span class="notification-panel-eyebrow">
+                                    BİLDİRİM MERKEZİ
+                                </span>
+
+                                <h3>
+                                    Bildirimler
+                                </h3>
+
+                            </div>
+
+
+                            <div class="notification-panel-header-actions">
+
+                                <button
+                                    class="notification-text-button"
+                                    id="mark-all-notifications-read"
+                                    type="button"
+                                >
+                                    Tümünü okundu işaretle
+                                </button>
+
+                                <button
+                                    class="notification-panel-close"
+                                    id="close-notification-panel"
+                                    type="button"
+                                    aria-label="Bildirim merkezini kapat"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SUMMARY -->
+
+                        <div class="notification-panel-summary">
+
+                            <div class="notification-summary-icon">
+                                <i class="fa-regular fa-bell"></i>
+                            </div>
+
+                            <div>
+
+                                <strong id="notification-summary-title">
+                                    Bildirim merkezi hazır
+                                </strong>
+
+                                <span id="notification-summary-text">
+                                    Sistem olayları ve önemli tahmin uyarıları burada listelenir.
+                                </span>
+
+                            </div>
+
+                            <span
+                                class="notification-unread-count"
+                                id="notification-unread-count"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <!-- FILTERS -->
+
+                        <div class="notification-filter-tabs">
+
+                            <button
+                                class="notification-filter-button active"
+                                type="button"
+                                data-notification-filter="all"
+                            >
+                                Tümü
+                            </button>
+
+                            <button
+                                class="notification-filter-button"
+                                type="button"
+                                data-notification-filter="unread"
+                            >
+                                Okunmamış
+                            </button>
+
+                            <button
+                                class="notification-filter-button"
+                                type="button"
+                                data-notification-filter="risk"
+                            >
+                                Risk
+                            </button>
+
+                            <button
+                                class="notification-filter-button"
+                                type="button"
+                                data-notification-filter="system"
+                            >
+                                Sistem
+                            </button>
+
+                        </div>
+
+
+                        <!-- NOTIFICATION LIST -->
+
+                        <div
+                            class="notification-list"
+                            id="notification-list"
+                        >
+
+                            <div
+                                class="notification-empty-state"
+                                id="notification-empty-state"
+                            >
+
+                                <div class="notification-empty-icon">
+                                    <i class="fa-regular fa-bell-slash"></i>
+                                </div>
+
+                                <strong>
+                                    Yeni bildirim yok
+                                </strong>
+
+                                <span>
+                                    Yeni bir sistem olayı veya önemli tahmin oluştuğunda burada görünecek.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FOOTER -->
+
+                        <div class="notification-panel-footer">
+
+                            <span>
+                                Bildirimler bu tarayıcıda saklanır.
+                            </span>
+
+                            <button
+                                class="notification-clear-button"
+                                id="clear-notifications"
+                                type="button"
+                            >
+                                <i class="fa-regular fa-trash-can"></i>
+                                Temizle
+                            </button>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PROFILE
+                ================================================== -->
+
+                <div class="profile-wrapper">
+
+
+                    <button
+                        class="profile-button"
+                        id="profile-button"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="profile-menu"
+                    >
+
+                        <div
+                            class="profile-avatar"
+                            id="top-profile-avatar"
+                        >
+                            {{ user_initials }}
+                        </div>
+
+
+                        <div class="profile-info">
+
+                            <strong id="top-profile-name">
+                                {{ user_name }}
+                            </strong>
+
+                            <span
+                                id="top-profile-role"
+                                title="{{ organization_name }}"
+                            >
+                                {{ user_role }}
+                            </span>
+
+                        </div>
+
+
+                        <i
+                            class="fa-solid fa-chevron-down profile-chevron"
+                        ></i>
+
+                    </button>
+
+
+
+                    <!-- PROFILE DROPDOWN -->
+
+                    <div
+                        class="profile-menu"
+                        id="profile-menu"
+                    >
+
+
+                        <div class="profile-menu-header">
+
+                            <div
+                                class="profile-large-avatar"
+                                id="menu-profile-avatar"
+                            >
+                                {{ user_initials }}
+                            </div>
+
+
+                            <div>
+
+                                <strong id="menu-profile-name">
+                                    {{ user_name }}
+                                </strong>
+
+                                <span id="menu-profile-email">
+                                    {{ user_email }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- SESSION -->
+
+                        <div class="profile-session-row">
+
+                            <div>
+                                <span class="profile-session-dot"></span>
+                                Aktif oturum
+                            </div>
+
+                            <strong>
+                                Güvenli
+                            </strong>
+
+                        </div>
+
+
+
+                        <!-- ACCOUNT -->
+
+                        <div class="profile-menu-section">
+
+                            <span class="profile-section-label">
+                                HESAP
+                            </span>
+
+
+                            <button
+                                class="profile-menu-item"
+                                id="profile-settings-button"
+                                type="button"
+                            >
+                                <i class="fa-regular fa-user"></i>
+
+                                <div>
+                                    <strong>
+                                        Hesap Ayarları
+                                    </strong>
+
+                                    <span>
+                                        Profil tercihlerini düzenle
+                                    </span>
+                                </div>
+                            </button>
+
+
+                            <button
+                                class="profile-menu-item"
+                                id="security-button"
+                                type="button"
+                            >
+                                <i class="fa-solid fa-lock"></i>
+
+                                <div>
+                                    <strong>
+                                        Şifre ve Güvenlik
+                                    </strong>
+
+                                    <span>
+                                        Şifre ve oturum güvenliği
+                                    </span>
+                                </div>
+                            </button>
+
+
+                            <button
+                                class="profile-menu-item"
+                                id="email-settings-button"
+                                type="button"
+                            >
+                                <i class="fa-regular fa-envelope"></i>
+
+                                <div>
+                                    <strong>
+                                        E-posta Ayarları
+                                    </strong>
+
+                                    <span>
+                                        Adres ve doğrulama durumu
+                                    </span>
+                                </div>
+                            </button>
+
+
+                            {% if role_key in ["owner", "admin"] %}
+                            <button
+                                class="profile-menu-item"
+                                id="organization-settings-button"
+                                type="button"
+                                aria-haspopup="dialog"
+                                aria-controls="organization-modal"
+                            >
+                                <i class="fa-solid fa-users-gear"></i>
+                                <div>
+                                    <strong>Organizasyon ve Ekip</strong>
+                                    <span>Üyeleri ve rolleri yönet</span>
+                                </div>
+                            </button>
+                            {% endif %}
+
+                            <button
+                                class="profile-menu-item"
+                                id="notification-settings-button"
+                                type="button"
+                            >
+                                <i class="fa-regular fa-bell"></i>
+
+                                <div>
+                                    <strong>
+                                        Bildirim Tercihleri
+                                    </strong>
+
+                                    <span>
+                                        Uyarı ve bildirim seçenekleri
+                                    </span>
+                                </div>
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- THEME -->
+
+                        <div class="profile-menu-section">
+
+                            <span class="profile-section-label">
+                                TEMA
+                            </span>
+
+
+                            <div class="theme-switcher">
+
+                                <button
+                                    class="theme-button active"
+                                    type="button"
+                                    data-theme="midnight"
+                                >
+                                    <i class="fa-solid fa-moon"></i>
+                                    Koyu
+                                </button>
+
+
+                                <button
+                                    class="theme-button"
+                                    type="button"
+                                    data-theme="light"
+                                >
+                                    <i class="fa-regular fa-sun"></i>
+                                    Açık
+                                </button>
+
+
+                                <button
+                                    class="theme-button"
+                                    type="button"
+                                    data-theme="slate"
+                                >
+                                    <i class="fa-solid fa-circle-half-stroke"></i>
+                                    Slate
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- META -->
+
+                        <div class="profile-meta">
+
+                            <div>
+                                <span>Son giriş</span>
+
+                                <strong>
+                                    Bugün
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span>Rol</span>
+
+                                <strong id="profile-role-label">
+                                    {{ user_role }}
+                                </strong>
+                            </div>
+
+
+                            <div>
+                                <span>Organizasyon</span>
+
+                                <strong id="profile-organization-name">
+                                    {{ organization_name }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+
+                        <button
+                            class="profile-logout"
+                            id="logout-button"
+                            type="button"
+                            data-logout-url="{{ url_for('logout') }}"
+                        >
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+                            Oturumu Kapat
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="content-area">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================================
+     ACCOUNT SETTINGS MODAL
+========================================================= -->
+
+<div
+    class="modal-backdrop modal-overlay"
+    id="account-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="account-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="account-modal-title"
+    >
+
+
+        <div class="account-modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    Hesap Ayarları
+                </span>
+
+                <h2 id="account-modal-title">
+                    Profil Tercihleri
+                </h2>
+
+                <p>
+                    Görünen kullanıcı bilgilerinizi ve panel tercihlerinizi yönetin.
+                    Sistem rolü kullanıcı tarafından değiştirilemez.
+                </p>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="close-account-modal"
+                type="button"
+                aria-label="Hesap ayarlarını kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+
+        <div class="account-profile-summary">
+
+            <div
+                class="account-avatar-large"
+                id="account-summary-avatar"
+            >
+                {{ user_initials }}
+            </div>
+
+
+            <div class="account-profile-text">
+
+                <strong id="account-summary-name">
+                    {{ user_name }}
+                </strong>
+
+                <span id="account-organization-name">
+                    {{ organization_name }}
+                </span>
+
+            </div>
+
+
+            <div class="account-status-badge">
+
+                <span></span>
+
+                Aktif
+
+            </div>
+
+        </div>
+
+
+
+        <form id="account-settings-form">
+
+
+            <!-- PROFILE INFORMATION -->
+
+            <div class="settings-section">
+
+                <div class="settings-section-title">
+
+                    <div class="settings-section-icon">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+
+                    <div>
+                        <h3>
+                            Profil Bilgileri
+                        </h3>
+
+                        <p>
+                            Profilde görüntülenecek kişisel tercihleri düzenleyin.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="settings-form-grid">
+
+
+                    <div class="settings-field">
+
+                        <label for="account-name">
+                            Görünen Ad
+                        </label>
+
+                        <input
+                            id="account-name"
+                            type="text"
+                            value="{{ user_name }}"
+                            autocomplete="name"
+                            maxlength="60"
+                        >
+
+                        <small class="settings-helper">
+                            Bu alan yalnızca profil görünümünde kullanılan addır.
+                        </small>
+
+                    </div>
+
+
+
+                    <div class="settings-field">
+
+                        <label>
+                            Sistem Rolü
+                        </label>
+
+
+                        <div class="readonly-setting">
+
+                            <div>
+
+                                <i class="fa-solid fa-shield-halved"></i>
+
+                                <span>
+
+                                    <strong id="account-role-label">
+                                        {{ user_role }}
+                                    </strong>
+
+                                    <small>
+                                        Sistem tarafından atanmıştır
+                                    </small>
+
+                                </span>
+
+                            </div>
+
+                            <i class="fa-solid fa-lock readonly-lock"></i>
+
+                        </div>
+
+
+                        <small class="settings-helper">
+                            Kullanıcı kendi yetki seviyesini değiştiremez.
+                        </small>
+
+                    </div>
+
+
+
+                    <div class="settings-field full-width">
+
+                        <label for="account-email">
+                            E-posta Adresi
+                        </label>
+
+
+                        <div class="email-setting-input">
+
+                            <input
+                                id="account-email"
+                                type="email"
+                                value="{{ user_email }}"
+                                autocomplete="email"
+                            >
+
+                            <span
+                                class="email-verification-status pending"
+                                id="email-verification-status"
+                            >
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                Doğrulama gerekli
+                            </span>
+
+                        </div>
+
+
+                        <small class="settings-helper">
+                            Gerçek e-posta doğrulama servisi henüz yapılandırılmadı.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ORGANIZATION & TEAM SHORTCUT -->
+
+<div class="settings-section">
+    <div class="settings-section-title">
+        <div class="settings-section-icon">
+            <i class="fa-solid fa-users-gear"></i>
+        </div>
+
+        <div>
+            <h3>
+                Organizasyon ve Ekip
+            </h3>
+
+            <p>
+                Şirket bilgilerini, ekip üyelerini ve kullanıcı rollerini yönetin.
+            </p>
+        </div>
+    </div>
+
+    <div class="readonly-setting">
+        <div>
+            <i class="fa-regular fa-building"></i>
+
+            <span>
+                <strong>
+                    {{ organization_name }}
+                </strong>
+
+                <small>
+                    Mevcut rolünüz: {{ user_role }}
+                </small>
+            </span>
+        </div>
+
+        <button
+            class="modal-primary-button"
+            id="open-organization-from-account"
+            type="button"
+        >
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            Yönetimi Aç
+        </button>
+    </div>
+</div>
+
+
+<!-- APPLICATION PREFERENCES -->
+
+            <div class="settings-section">
+
+                <div class="settings-section-title">
+
+                    <div class="settings-section-icon">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Uygulama Tercihleri
+                        </h3>
+
+                        <p>
+                            Panelin varsayılan davranışını kişiselleştirin.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-form-grid">
+
+                    <div class="settings-field">
+
+                        <label for="account-language">
+                            Arayüz Dili
+                        </label>
+
+                        <select id="account-language">
+
+                            <option
+                                value="tr"
+                                selected
+                            >
+                                Türkçe
+                            </option>
+
+                            <option value="en">
+                                English
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="settings-field">
+
+                        <label for="default-period">
+                            Varsayılan Analiz Aralığı
+                        </label>
+
+                        <select id="default-period">
+
+                            <option value="7">
+                                Son 7 Gün
+                            </option>
+
+                            <option
+                                value="30"
+                                selected
+                            >
+                                Son 30 Gün
+                            </option>
+
+                            <option value="90">
+                                Son 90 Gün
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ACCOUNT STATUS -->
+
+            <div class="settings-section">
+
+                <div class="settings-section-title">
+
+                    <div class="settings-section-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Hesap Durumu
+                        </h3>
+
+                        <p>
+                            Oturum ve güvenlik bilgilerinin özeti.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="account-security-summary">
+
+
+                    <div class="security-summary-item">
+
+                        <span class="security-summary-icon warning">
+                            <i class="fa-regular fa-envelope"></i>
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                E-posta
+                            </strong>
+
+                            <span id="account-email-status">
+                                Doğrulama gerekli
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="security-summary-item">
+
+                        <span class="security-summary-icon success">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Oturum
+                            </strong>
+
+                            <span>
+                                Aktif
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="security-summary-item">
+
+                        <span class="security-summary-icon neutral">
+                            <i class="fa-solid fa-key"></i>
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Şifre
+                            </strong>
+
+                            <span>
+                                Güvenlik bölümünden yönetilir
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="modal-footer">
+
+                <button
+                    class="modal-secondary-button"
+                    id="cancel-account-settings"
+                    type="button"
+                >
+                    Vazgeç
+                </button>
+
+
+                <button
+                    class="modal-primary-button"
+                    type="submit"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Tercihleri Kaydet
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     ORGANIZATION & TEAM MANAGEMENT MODAL
+========================================================= -->
+
+<div class="modal-backdrop modal-overlay" id="organization-modal" aria-hidden="true">
+    <div class="account-modal organization-modal" role="dialog" aria-modal="true"
+         aria-labelledby="organization-modal-title">
+
+        <div class="account-modal-header">
+            <div>
+                <span class="modal-eyebrow">Organizasyon Yönetimi</span>
+                <h2 id="organization-modal-title">Organizasyon ve Ekip</h2>
+                <p>Organizasyon bilgilerini, ekip üyelerini ve kullanıcı rollerini yönetin.</p>
+            </div>
+            <button class="modal-close" id="close-organization-modal" type="button"
+                    aria-label="Organizasyon yönetimini kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="account-profile-summary">
+            <div class="account-avatar-large"><i class="fa-solid fa-building"></i></div>
+            <div class="account-profile-text">
+                <strong id="organization-summary-name">{{ organization_name }}</strong>
+                <span>Aktif organizasyon</span>
+            </div>
+            <div class="account-status-badge"><span></span>Aktif</div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <div class="settings-section-icon"><i class="fa-regular fa-building"></i></div>
+                <div>
+                    <h3>Organizasyon Bilgileri</h3>
+                    <p>Çalışma alanınızın temel bilgilerini görüntüleyin ve yönetin.</p>
+                </div>
+            </div>
+
+            <div class="settings-form-grid">
+                <div class="settings-field">
+                    <label for="organization-name-input">Organizasyon Adı</label>
+                    <input id="organization-name-input" type="text"
+                           value="{{ organization_name }}" maxlength="120"
+                           autocomplete="organization">
+                    <small class="settings-helper">
+                        Organizasyon adı ekip üyelerinin profilinde görüntülenir.
+                    </small>
+                </div>
+
+                <div class="settings-field">
+                    <label>Mevcut Rolünüz</label>
+                    <div class="readonly-setting">
+                        <div>
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>
+                                <strong id="organization-current-role">{{ user_role }}</strong>
+                                <small>Organizasyondaki yetki seviyeniz</small>
+                            </span>
+                        </div>
+                        <i class="fa-solid fa-lock readonly-lock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-primary-button" id="save-organization-settings" type="button">
+                    <i class="fa-solid fa-check"></i> Organizasyonu Kaydet
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <div class="settings-section-icon"><i class="fa-solid fa-users"></i></div>
+                <div>
+                    <h3>Ekip Üyeleri</h3>
+                    <p>Organizasyona bağlı kullanıcıları ve rollerini görüntüleyin.</p>
+                </div>
+            </div>
+
+            <div class="organization-members-list" id="organization-members-list">
+                <div class="organization-member-card" id="current-organization-member">
+                    <div class="organization-member-avatar">{{ user_initials }}</div>
+                    <div class="organization-member-info">
+                        <strong>{{ user_name }}</strong>
+                        <span>{{ user_email }}</span>
+                    </div>
+                    <div class="organization-member-role">
+                        <span>{{ user_role }}</span>
+                        <small>Siz</small>
+                    </div>
+                </div>
+
+                <div class="notification-empty-state" id="organization-members-empty" hidden>
+                    <div class="notification-empty-icon"><i class="fa-solid fa-users"></i></div>
+                    <strong>Henüz başka ekip üyesi yok</strong>
+                    <span>Yeni bir kullanıcı eklediğinizde burada görüntülenecek.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <div class="settings-section-icon"><i class="fa-solid fa-user-plus"></i></div>
+                <div>
+                    <h3>Ekip Üyesi Ekle</h3>
+                    <p>Kullanıcı bilgilerini girin ve organizasyon rolünü belirleyin.</p>
+                </div>
+            </div>
+
+            <form id="organization-member-form">
+                <div class="settings-form-grid">
+                    <div class="settings-field">
+                        <label for="organization-member-name">Ad Soyad</label>
+                        <input id="organization-member-name" name="full_name" type="text"
+                               placeholder="Örn. Ayşe Yılmaz" maxlength="80"
+                               autocomplete="name" required>
+                    </div>
+
+                    <div class="settings-field">
+                        <label for="organization-member-email">E-posta Adresi</label>
+                        <input id="organization-member-email" name="email" type="email"
+                               placeholder="ornek@domain.com" autocomplete="email" required>
+                    </div>
+
+                    <div class="settings-field">
+                        <label for="organization-member-role">Rol</label>
+                        <select id="organization-member-role" name="role" required>
+                            <option value="viewer">Görüntüleyici</option>
+                            <option value="analyst" selected>Analist</option>
+                            <option value="operator">Operasyon</option>
+                            <option value="admin">Yönetici</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-field">
+                        <label for="organization-member-status">Hesap Durumu</label>
+                        <select id="organization-member-status" name="status">
+                            <option value="active" selected>Aktif</option>
+                            <option value="inactive">Pasif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="modal-secondary-button" id="cancel-organization-member"
+                            type="button">Temizle</button>
+                    <button class="modal-primary-button" type="submit">
+                        <i class="fa-solid fa-user-plus"></i> Üye Ekle
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="modal-primary-button" id="close-organization-modal-footer" type="button">
+                <i class="fa-solid fa-check"></i> Tamam
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     SECURITY MODAL
+========================================================= -->
+
+<div
+    class="modal-backdrop modal-overlay"
+    id="security-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="account-modal security-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="security-modal-title"
+    >
+
+        <div class="account-modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    Hesap Güvenliği
+                </span>
+
+                <h2 id="security-modal-title">
+                    Şifre ve Güvenlik
+                </h2>
+
+                <p>
+                    Hesap erişimi ve güvenlik kontrollerini yönetin.
+                </p>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="close-security-modal"
+                type="button"
+                aria-label="Güvenlik penceresini kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+
+        <div class="settings-section">
+
+            <div class="settings-section-title">
+
+                <div class="settings-section-icon">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+
+                <div>
+
+                    <h3>
+                        Şifre Değiştir
+                    </h3>
+
+                    <p>
+                        Hesabınız için yeni bir şifre belirleyin.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="password-form">
+
+
+                <div class="settings-field security-field">
+
+                    <label for="current-password">
+                        Mevcut Şifre
+                    </label>
+
+
+                    <div class="password-input-wrapper">
+
+                        <input
+                            id="current-password"
+                            type="password"
+                            autocomplete="current-password"
+                            placeholder="Mevcut şifrenizi girin"
+                        >
+
+
+                        <button
+                            class="password-toggle"
+                            type="button"
+                            data-password-target="current-password"
+                            aria-label="Şifreyi göster"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="settings-field security-field">
+
+                    <label for="new-password">
+                        Yeni Şifre
+                    </label>
+
+
+                    <div class="password-input-wrapper">
+
+                        <input
+                            id="new-password"
+                            type="password"
+                            autocomplete="new-password"
+                            placeholder="Yeni şifrenizi girin"
+                        >
+
+
+                        <button
+                            class="password-toggle"
+                            type="button"
+                            data-password-target="new-password"
+                            aria-label="Şifreyi göster"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+
+                    <small class="security-helper">
+                        En az 8 karakterden oluşan güçlü bir parola kullanın.
+                    </small>
+
+                </div>
+
+
+
+                <div class="settings-field security-field">
+
+                    <label for="confirm-password">
+                        Yeni Şifreyi Tekrar Girin
+                    </label>
+
+
+                    <div class="password-input-wrapper">
+
+                        <input
+                            id="confirm-password"
+                            type="password"
+                            autocomplete="new-password"
+                            placeholder="Yeni şifrenizi tekrar girin"
+                        >
+
+
+                        <button
+                            class="password-toggle"
+                            type="button"
+                            data-password-target="confirm-password"
+                            aria-label="Şifreyi göster"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="security-information-box">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <div>
+
+                        <strong>
+                            Kimlik doğrulama entegrasyonu gerekli
+                        </strong>
+
+                        <p>
+                            Şifreler tarayıcıda saklanmaz.
+                            Kalıcı şifre değişiklikleri Flask kimlik doğrulama
+                            sistemi üzerinden gerçekleştirilmelidir.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="modal-footer security-footer">
+
+                    <button
+                        class="modal-secondary-button"
+                        id="cancel-security-settings"
+                        type="button"
+                    >
+                        Vazgeç
+                    </button>
+
+
+                    <button
+                        class="modal-primary-button"
+                        type="submit"
+                    >
+                        <i class="fa-solid fa-lock"></i>
+                        Şifreyi Güncelle
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     EMAIL SETTINGS MODAL
+========================================================= -->
+
+<div
+    class="modal-backdrop modal-overlay"
+    id="email-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="account-modal email-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="email-modal-title"
+    >
+
+        <div class="account-modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    İletişim Ayarları
+                </span>
+
+                <h2 id="email-modal-title">
+                    E-posta Ayarları
+                </h2>
+
+                <p>
+                    Hesap iletişim adresini ve doğrulama durumunu yönetin.
+                </p>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="close-email-modal"
+                type="button"
+                aria-label="E-posta ayarlarını kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+
+        <div class="settings-section">
+
+            <div class="settings-section-title">
+
+                <div class="settings-section-icon">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <div>
+
+                    <h3>
+                        Mevcut E-posta
+                    </h3>
+
+                    <p>
+                        Hesabınızda kayıtlı iletişim adresi.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="email-overview-card">
+
+                <div class="email-overview-icon">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+
+                <div class="email-overview-content">
+
+                    <span>
+                        E-posta adresi
+                    </span>
+
+                    <strong id="email-modal-current-address">
+                        {{ user_email }}
+                    </strong>
+
+                </div>
+
+
+                <div
+                    class="email-status-pill pending"
+                    id="email-modal-status"
+                >
+                    <i class="fa-solid fa-circle-exclamation"></i>
+
+                    Doğrulanmadı
+                </div>
+
+            </div>
+
+
+
+            <div class="email-warning-box">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <div>
+
+                    <strong>
+                        Doğrulama servisi bağlı değil
+                    </strong>
+
+                    <p>
+                        Gerçek bir e-posta doğrulama servisi yapılandırılana
+                        kadar adres otomatik olarak doğrulanmış kabul edilmez.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="settings-section">
+
+            <div class="settings-section-title">
+
+                <div class="settings-section-icon">
+                    <i class="fa-solid fa-pen"></i>
+                </div>
+
+                <div>
+
+                    <h3>
+                        E-posta Adresini Değiştir
+                    </h3>
+
+                    <p>
+                        Yeni iletişim adresini girin.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <form id="email-settings-form">
+
+                <div class="settings-field">
+
+                    <label for="email-settings-address">
+                        Yeni E-posta Adresi
+                    </label>
+
+                    <input
+                        id="email-settings-address"
+                        type="email"
+                        placeholder="ornek@domain.com"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <div class="email-actions">
+
+                    <button
+                        class="modal-secondary-button"
+                        id="cancel-email-settings"
+                        type="button"
+                    >
+                        Vazgeç
+                    </button>
+
+
+                    <button
+                        class="modal-primary-button"
+                        type="submit"
+                    >
+                        <i class="fa-solid fa-check"></i>
+                        E-postayı Güncelle
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+
+        <div class="settings-section">
+
+            <div class="verification-panel">
+
+                <div class="verification-content">
+
+                    <span class="verification-state-icon">
+                        <i class="fa-solid fa-envelope-circle-check"></i>
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            E-posta doğrulanmadı
+                        </strong>
+
+                        <p>
+                            E-posta servisi bağlandığında doğrulama bağlantısı
+                            gönderilebilir.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="verification-button"
+                    id="send-verification-email"
+                    type="button"
+                    disabled
+                >
+                    <i class="fa-regular fa-paper-plane"></i>
+                    Doğrulama E-postası Gönder
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     HELP CENTER MODAL
+========================================================= -->
+
+<div
+    class="modal-backdrop modal-overlay"
+    id="help-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="account-modal help-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="help-modal-title"
+    >
+
+
+        <!-- HEADER -->
+
+        <div class="account-modal-header">
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    YARDIM MERKEZİ
+                </span>
+
+                <h2 id="help-modal-title">
+                    Nasıl yardımcı olabiliriz?
+                </h2>
+
+                <p>
+                    Platform özellikleri, model tahminleri,
+                    analizler ve raporlar hakkında bilgi alın.
+                </p>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="close-help-modal"
+                type="button"
+                aria-label="Yardım merkezini kapat"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+
+        <!-- QUICK START -->
+
+        <div class="help-section">
+
+            <div class="help-section-header">
+
+                <div class="settings-section-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+
+                <div>
+
+                    <h3>
+                        Hızlı Başlangıç
+                    </h3>
+
+                    <p>
+                        Platformun temel bölümlerine hızlıca ulaşın.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="help-grid">
+
+
+                <!-- PREDICTION -->
+
+                <a
+                    href="{{ url_for('prediction_page') }}"
+                    class="help-card"
+                >
+
+                    <span class="help-card-icon aqua">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            Yeni Tahmin
+                        </strong>
+
+                        <span>
+                            Sipariş bilgilerini kullanarak
+                            müşteri memnuniyeti tahmini oluşturun.
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-arrow-right help-arrow"></i>
+
+                </a>
+
+
+
+                <!-- HISTORY -->
+
+                <a
+                    href="{{ url_for('history') }}"
+                    class="help-card"
+                >
+
+                    <span class="help-card-icon blue">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            Tahmin Geçmişi
+                        </strong>
+
+                        <span>
+                            Daha önce oluşturulan tahminleri,
+                            riskleri ve sonuçları görüntüleyin.
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-arrow-right help-arrow"></i>
+
+                </a>
+
+
+
+                <!-- ANALYTICS -->
+
+                <a
+                    href="{{ url_for('analytics') }}"
+                    class="help-card"
+                >
+
+                    <span class="help-card-icon green">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            Veri Analizi
+                        </strong>
+
+                        <span>
+                            Tahmin kayıtlarını kategori, eyalet,
+                            ödeme ve teslimat açısından analiz edin.
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-arrow-right help-arrow"></i>
+
+                </a>
+
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="{{ url_for('reports') }}"
+                    class="help-card"
+                >
+
+                    <span class="help-card-icon amber">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </span>
+
+
+                    <div>
+
+                        <strong>
+                            Raporlar
+                        </strong>
+
+                        <span>
+                            Yönetici özetlerini görüntüleyin,
+                            yazdırın veya PDF olarak indirin.
+                        </span>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-arrow-right help-arrow"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- FAQ -->
+
+        <div class="help-section">
+
+            <div class="help-section-header">
+
+                <div class="settings-section-icon">
+                    <i class="fa-regular fa-circle-question"></i>
+                </div>
+
+                <div>
+
+                    <h3>
+                        Sık Sorulan Sorular
+                    </h3>
+
+                    <p>
+                        Platformun çalışma mantığı hakkında temel bilgiler.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="help-faq">
+
+
+                <details class="help-faq-item">
+
+                    <summary>
+
+                        Tahmin sonucu nasıl oluşturuluyor?
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </summary>
+
+                    <p>
+                        Yeni Tahmin ekranında girilen müşteri,
+                        ödeme, teslimat ve ürün bilgileri eğitilmiş
+                        makine öğrenmesi modeline gönderilir.
+                        Model memnuniyet olasılığını hesaplar ve
+                        sonuç MySQL veritabanına kaydedilir.
+                    </p>
+
+                </details>
+
+
+
+                <details class="help-faq-item">
+
+                    <summary>
+
+                        Risk seviyesi ne anlama geliyor?
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </summary>
+
+                    <p>
+                        Risk seviyesi model sonucundan elde edilen
+                        memnuniyetsizlik olasılığına göre kaydın
+                        öncelik seviyesini ifade eder. Tahminler
+                        düşük, orta veya yüksek risk olarak sınıflandırılır.
+                    </p>
+
+                </details>
+
+
+
+                <details class="help-faq-item">
+
+                    <summary>
+
+                        Dashboard verileri gerçek mi?
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </summary>
+
+                    <p>
+                        Evet. Genel Bakış, Veri Analizi,
+                        Tahmin Geçmişi ve Raporlar ekranlarındaki
+                        operasyonel veriler MySQL veritabanında
+                        kayıtlı gerçek model tahminlerinden oluşturulur.
+                    </p>
+
+                </details>
+
+
+
+                <details class="help-faq-item">
+
+                    <summary>
+
+                        Model Performansı değerleri neyi gösteriyor?
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </summary>
+
+                    <p>
+                        Model Performansı ekranındaki doğruluk,
+                        ROC-AUC, kesinlik, yakalama oranı ve F1-Score
+                        değerleri model geliştirme sürecindeki
+                        test veri seti değerlendirmelerini ifade eder.
+                    </p>
+
+                </details>
+
+
+
+                <details class="help-faq-item">
+
+                    <summary>
+
+                        Raporu PDF olarak nasıl indirebilirim?
+
+                        <i class="fa-solid fa-chevron-down"></i>
+
+                    </summary>
+
+                    <p>
+                        Raporlar ekranında bulunan PDF İndir
+                        butonunu kullanarak güncel tahmin
+                        sonuçlarından oluşturulan raporu
+                        PDF dosyası olarak indirebilirsiniz.
+                    </p>
+
+                </details>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SYSTEM STATUS -->
+
+        <div class="help-system-card">
+
+            <div class="help-system-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+
+            <div>
+
+                <strong>
+                    Sistem kullanıma hazır
+                </strong>
+
+                <span>
+                    Tahmin servisi ve veritabanı bağlantısı
+                    çalıştığında oluşturulan tahminler otomatik
+                    olarak kaydedilir ve analiz ekranlarına yansır.
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="modal-footer">
+
+            <button
+                class="modal-primary-button"
+                id="close-help-modal-footer"
+                type="button"
+            >
+                <i class="fa-solid fa-check"></i>
+                Anladım
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+>
+
+    <div class="toast-icon">
+        <i class="fa-solid fa-circle-check"></i>
+    </div>
+
+
+    <div>
+
+        <strong>
+            Bildirim
+        </strong>
+
+        <span id="toast-message">
+            İşlem tamamlandı.
+        </span>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    src="{{ url_for('static', filename='js/dashboard.js') }}"
+></script>
+
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+
+</html>

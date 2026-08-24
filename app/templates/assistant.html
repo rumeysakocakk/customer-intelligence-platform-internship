@@ -1,0 +1,1065 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+AI Asistan | Customer Intelligence Platform
+{% endblock %}
+
+
+{% block breadcrumb %}
+AI Asistan
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/assistant.css') }}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div
+    class="assistant-page"
+    id="assistant-page"
+>
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="assistant-page-header">
+
+
+        <div class="assistant-page-heading">
+
+
+            <div class="assistant-page-icon">
+
+                <i class="fa-solid fa-sparkles"></i>
+
+            </div>
+
+
+            <div>
+
+                <span class="assistant-eyebrow">
+                    CUSTOMER INTELLIGENCE AI
+                </span>
+
+
+                <h1>
+                    AI Asistan
+                </h1>
+
+
+                <p>
+                    Platform verilerini analiz edin, müşteri risklerini yorumlayın
+                    ve tahmin sonuçları hakkında yapay zeka desteği alın.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- AI STATUS -->
+
+        <div
+            class="assistant-service-status"
+            id="assistant-service-status"
+        >
+
+            <span class="assistant-service-dot"></span>
+
+
+            <div>
+
+                <strong id="assistant-service-text">
+                    AI servisi kontrol ediliyor
+                </strong>
+
+
+                <span id="assistant-model-name">
+                    Gemini
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         WORKSPACE
+    ====================================================== -->
+
+    <section class="assistant-workspace">
+
+
+        <!-- =================================================
+             HISTORY PANEL
+        ================================================== -->
+
+        <aside class="assistant-history-panel">
+
+
+            <!-- HISTORY HEADER -->
+
+            <div class="assistant-history-top">
+
+
+                <div>
+
+                    <span class="assistant-small-label">
+                        SOHBETLER
+                    </span>
+
+
+                    <h2>
+                        Geçmiş
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="assistant-icon-button"
+                    id="assistant-new-chat"
+                    type="button"
+                    title="Yeni sohbet"
+                    aria-label="Yeni sohbet başlat"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- NEW CHAT -->
+
+            <button
+                class="assistant-primary-button assistant-new-chat-wide"
+                id="assistant-new-chat-wide"
+                type="button"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Yeni Sohbet
+                </span>
+
+            </button>
+
+
+
+            <!-- =================================================
+                 FILTERS
+            ================================================== -->
+
+            <div class="assistant-filter-panel">
+
+
+                <!-- SEARCH -->
+
+                <div class="assistant-search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                    <input
+                        id="assistant-history-search"
+                        type="search"
+                        placeholder="Sohbetlerde ara..."
+                        autocomplete="off"
+                        aria-label="Sohbet geçmişinde ara"
+                    >
+
+                </div>
+
+
+
+                <!-- DATE + CATEGORY -->
+
+                <div class="assistant-filter-grid">
+
+
+                    <!-- DATE -->
+
+                    <div class="assistant-filter-field">
+
+                        <label for="assistant-history-date-filter">
+                            Tarih
+                        </label>
+
+
+                        <select
+                            id="assistant-history-date-filter"
+                            aria-label="Tarihe göre filtrele"
+                        >
+
+                            <option value="all">
+                                Tüm tarihler
+                            </option>
+
+
+                            <option value="today">
+                                Bugün
+                            </option>
+
+
+                            <option value="yesterday">
+                                Dün
+                            </option>
+
+
+                            <option value="7days">
+                                Son 7 gün
+                            </option>
+
+
+                            <option value="30days">
+                                Son 30 gün
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="assistant-filter-field">
+
+                        <label for="assistant-history-category-filter">
+                            Konu
+                        </label>
+
+
+                        <select
+                            id="assistant-history-category-filter"
+                            aria-label="Konuya göre filtrele"
+                        >
+
+                            <option value="all">
+                                Tüm konular
+                            </option>
+
+
+                            <option value="risk">
+                                Risk
+                            </option>
+
+
+                            <option value="satisfaction">
+                                Memnuniyet
+                            </option>
+
+
+                            <option value="prediction">
+                                Tahmin
+                            </option>
+
+
+                            <option value="report">
+                                Rapor
+                            </option>
+
+
+                            <option value="general">
+                                Genel
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- SORT -->
+
+                <div class="assistant-filter-field">
+
+                    <label for="assistant-history-sort">
+                        Sıralama
+                    </label>
+
+
+                    <select
+                        id="assistant-history-sort"
+                        aria-label="Sohbetleri sırala"
+                    >
+
+                        <option value="newest">
+                            En yeni
+                        </option>
+
+
+                        <option value="oldest">
+                            En eski
+                        </option>
+
+
+                        <option value="alphabetical">
+                            Başlığa göre A-Z
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- RESET -->
+
+                <button
+                    class="assistant-reset-filters"
+                    id="assistant-reset-filters"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                    <span>
+                        Filtreleri temizle
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 HISTORY LIST
+            ================================================== -->
+
+            <div
+                class="assistant-history-list"
+                id="assistant-history-list"
+            >
+
+
+                <div
+                    class="assistant-history-empty"
+                    id="assistant-history-empty"
+                >
+
+
+                    <div class="assistant-empty-icon">
+
+                        <i class="fa-regular fa-comments"></i>
+
+                    </div>
+
+
+                    <strong>
+                        Henüz sohbet yok
+                    </strong>
+
+
+                    <span>
+                        İlk konuşmanız başladığında burada görünecek.
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- HISTORY FOOTER -->
+
+            <div class="assistant-history-footer">
+
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+
+                <span>
+                    Sohbet geçmişi bu tarayıcıda saklanır.
+                </span>
+
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- =================================================
+             CHAT PANEL
+        ================================================== -->
+
+        <section class="assistant-chat-panel">
+
+
+            <!-- =================================================
+                 CHAT HEADER
+            ================================================== -->
+
+            <header class="assistant-chat-header">
+
+
+                <div class="assistant-chat-person">
+
+
+                    <div class="assistant-chat-avatar">
+
+                        <i class="fa-solid fa-brain"></i>
+
+                    </div>
+
+
+                    <div class="assistant-chat-heading">
+
+
+                        <div class="assistant-title-row">
+
+
+                            <strong
+                                id="assistant-current-chat-title"
+                            >
+                                Yeni Sohbet
+                            </strong>
+
+
+                            <button
+                                class="assistant-title-edit"
+                                id="assistant-rename-chat"
+                                type="button"
+                                title="Sohbet adını değiştir"
+                                aria-label="Sohbet adını değiştir"
+                            >
+
+                                <i class="fa-solid fa-pen"></i>
+
+
+                                <span>
+                                    Düzenle
+                                </span>
+
+                            </button>
+
+
+                        </div>
+
+
+                        <span>
+                            Platform analiz asistanı
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- CHAT ACTIONS -->
+
+                <div class="assistant-chat-actions">
+
+
+                    <button
+                        class="assistant-icon-button"
+                        id="assistant-scroll-bottom"
+                        type="button"
+                        title="Son mesaja git"
+                        aria-label="Son mesaja git"
+                    >
+
+                        <i class="fa-solid fa-arrow-down"></i>
+
+                    </button>
+
+
+                    <button
+                        class="assistant-icon-button danger"
+                        id="assistant-clear-chat"
+                        type="button"
+                        title="Sohbeti sil"
+                        aria-label="Sohbeti sil"
+                    >
+
+                        <i class="fa-regular fa-trash-can"></i>
+
+                    </button>
+
+
+                </div>
+
+
+            </header>
+
+
+
+            <!-- =================================================
+                 CHAT MESSAGES
+            ================================================== -->
+
+            <div
+                class="assistant-chat-scroll"
+                id="assistant-chat-scroll"
+            >
+
+
+                <div
+                    class="assistant-messages"
+                    id="assistant-messages"
+                >
+
+
+                    <!-- =================================================
+                         WELCOME
+                    ================================================== -->
+
+                    <div
+                        class="assistant-welcome"
+                        id="assistant-welcome"
+                    >
+
+
+                        <div class="assistant-welcome-icon">
+
+                            <i class="fa-solid fa-sparkles"></i>
+
+                        </div>
+
+
+                        <span class="assistant-welcome-label">
+                            AI DESTEKLİ ANALİZ
+                        </span>
+
+
+                        <h2>
+                            Verilerinizi birlikte inceleyelim
+                        </h2>
+
+
+                        <p>
+                            Müşteri memnuniyeti, risk dağılımı, tahmin sonuçları
+                            ve platform verileri hakkında soru sorabilirsiniz.
+                        </p>
+
+
+
+                        <!-- =================================================
+                             SUGGESTIONS
+                        ================================================== -->
+
+                        <div class="assistant-suggestions">
+
+
+                            <!-- PREDICTIONS -->
+
+                            <button
+                                class="assistant-suggestion-card"
+                                type="button"
+                                data-question="Platformdaki mevcut tahminleri kısaca analiz et."
+                            >
+
+
+                                <span class="assistant-suggestion-icon">
+
+                                    <i class="fa-solid fa-chart-line"></i>
+
+                                </span>
+
+
+                                <div>
+
+                                    <strong>
+                                        Tahminleri analiz et
+                                    </strong>
+
+
+                                    <span>
+                                        Mevcut sonuçların genel durumunu incele.
+                                    </span>
+
+                                </div>
+
+
+                            </button>
+
+
+
+                            <!-- RISK -->
+
+                            <button
+                                class="assistant-suggestion-card"
+                                type="button"
+                                data-question="Yüksek riskli müşteri tahminlerini analiz et ve önemli noktaları açıkla."
+                            >
+
+
+                                <span class="assistant-suggestion-icon danger">
+
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                                </span>
+
+
+                                <div>
+
+                                    <strong>
+                                        Riskleri değerlendir
+                                    </strong>
+
+
+                                    <span>
+                                        Yüksek riskli müşteri sonuçlarını yorumla.
+                                    </span>
+
+                                </div>
+
+
+                            </button>
+
+
+
+                            <!-- SATISFACTION -->
+
+                            <button
+                                class="assistant-suggestion-card"
+                                type="button"
+                                data-question="Müşteri memnuniyeti sonuçlarını kısa bir yönetici özeti olarak hazırla."
+                            >
+
+
+                                <span class="assistant-suggestion-icon success">
+
+                                    <i class="fa-solid fa-users"></i>
+
+                                </span>
+
+
+                                <div>
+
+                                    <strong>
+                                        Memnuniyeti özetle
+                                    </strong>
+
+
+                                    <span>
+                                        Sonuçları yönetici özeti şeklinde hazırla.
+                                    </span>
+
+                                </div>
+
+
+                            </button>
+
+
+
+                            <!-- INSIGHTS -->
+
+                            <button
+                                class="assistant-suggestion-card"
+                                type="button"
+                                data-question="Platformdaki güncel verilere göre dikkat edilmesi gereken en önemli noktaları belirt."
+                            >
+
+
+                                <span class="assistant-suggestion-icon warning">
+
+                                    <i class="fa-regular fa-lightbulb"></i>
+
+                                </span>
+
+
+                                <div>
+
+                                    <strong>
+                                        Önemli noktaları bul
+                                    </strong>
+
+
+                                    <span>
+                                        Riskleri ve fırsatları belirle.
+                                    </span>
+
+                                </div>
+
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 COMPOSER
+            ================================================== -->
+
+            <footer class="assistant-composer">
+
+
+                <div class="assistant-composer-box">
+
+
+                    <textarea
+                        id="assistant-input"
+                        rows="1"
+                        maxlength="2000"
+                        placeholder="Platform verileri hakkında bir soru sorun..."
+                        aria-label="AI Asistan mesajı"
+                    ></textarea>
+
+
+                    <button
+                        class="assistant-send-button"
+                        id="assistant-send"
+                        type="button"
+                        title="Gönder"
+                        aria-label="Mesaj gönder"
+                    >
+
+                        <i class="fa-solid fa-arrow-up"></i>
+
+                    </button>
+
+
+                </div>
+
+
+
+                <div class="assistant-composer-meta">
+
+
+                    <span>
+                        Enter ile gönder · Shift + Enter ile yeni satır
+                    </span>
+
+
+                    <span id="assistant-character-count">
+                        0 / 2000
+                    </span>
+
+
+                </div>
+
+
+            </footer>
+
+
+        </section>
+
+
+    </section>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     DELETE MODAL
+========================================================= -->
+
+<div
+    class="assistant-modal-overlay"
+    id="assistant-delete-modal"
+    aria-hidden="true"
+>
+
+
+    <div
+        class="assistant-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="assistant-delete-title"
+    >
+
+
+        <!-- CLOSE -->
+
+        <button
+            class="assistant-dialog-close"
+            data-close-delete
+            type="button"
+            aria-label="Pencereyi kapat"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+
+        <!-- ICON -->
+
+        <div class="assistant-dialog-icon danger">
+
+            <i class="fa-regular fa-trash-can"></i>
+
+        </div>
+
+
+
+        <!-- CONTENT -->
+
+        <div class="assistant-dialog-content">
+
+
+            <span class="assistant-dialog-eyebrow">
+                SOHBET YÖNETİMİ
+            </span>
+
+
+            <h3 id="assistant-delete-title">
+                Sohbeti silmek istiyor musunuz?
+            </h3>
+
+
+            <p>
+                Bu konuşma sohbet geçmişinizden kalıcı olarak kaldırılacak.
+                Bu işlem daha sonra geri alınamaz.
+            </p>
+
+
+        </div>
+
+
+
+        <!-- INFO -->
+
+        <div class="assistant-dialog-warning">
+
+
+            <i class="fa-solid fa-circle-info"></i>
+
+
+            <span>
+                Yalnızca seçili sohbet silinir.
+                Diğer konuşmalarınız etkilenmez.
+            </span>
+
+
+        </div>
+
+
+
+        <!-- ACTIONS -->
+
+        <div class="assistant-dialog-actions">
+
+
+            <button
+                class="assistant-secondary-button"
+                id="assistant-delete-cancel"
+                type="button"
+            >
+
+                Vazgeç
+
+            </button>
+
+
+            <button
+                class="assistant-danger-button"
+                id="assistant-delete-confirm"
+                type="button"
+            >
+
+                <i class="fa-regular fa-trash-can"></i>
+
+                <span>
+                    Sohbeti Sil
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     RENAME MODAL
+========================================================= -->
+
+<div
+    class="assistant-modal-overlay"
+    id="assistant-rename-modal"
+    aria-hidden="true"
+>
+
+
+    <div
+        class="assistant-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="assistant-rename-title"
+    >
+
+
+        <!-- CLOSE -->
+
+        <button
+            class="assistant-dialog-close"
+            data-close-rename
+            type="button"
+            aria-label="Pencereyi kapat"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+
+        <!-- ICON -->
+
+        <div class="assistant-dialog-icon">
+
+            <i class="fa-solid fa-pen"></i>
+
+        </div>
+
+
+
+        <!-- CONTENT -->
+
+        <div class="assistant-dialog-content">
+
+
+            <span class="assistant-dialog-eyebrow">
+                SOHBET AYARLARI
+            </span>
+
+
+            <h3 id="assistant-rename-title">
+                Sohbet başlığını düzenle
+            </h3>
+
+
+            <p>
+                Geçmiş listenizde kolayca bulabilmek için
+                konuşmaya açıklayıcı bir isim verebilirsiniz.
+            </p>
+
+
+        </div>
+
+
+
+        <!-- INPUT -->
+
+        <div class="assistant-dialog-field">
+
+
+            <label for="assistant-rename-input">
+                Sohbet Başlığı
+            </label>
+
+
+            <input
+                id="assistant-rename-input"
+                type="text"
+                maxlength="70"
+                placeholder="Örn. Ağustos risk analizi"
+                autocomplete="off"
+            >
+
+
+            <span>
+                Maksimum 70 karakter
+            </span>
+
+
+        </div>
+
+
+
+        <!-- ACTIONS -->
+
+        <div class="assistant-dialog-actions">
+
+
+            <button
+                class="assistant-secondary-button"
+                id="assistant-rename-cancel"
+                type="button"
+            >
+
+                Vazgeç
+
+            </button>
+
+
+            <button
+                class="assistant-primary-button"
+                id="assistant-rename-confirm"
+                type="button"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                <span>
+                    Değişiklikleri Kaydet
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script
+    src="{{ url_for('static', filename='js/assistant.js') }}"
+></script>
+
+{% endblock %}

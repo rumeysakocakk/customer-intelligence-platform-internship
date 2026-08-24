@@ -1,0 +1,1363 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Model Performansı | Customer Intelligence
+{% endblock %}
+
+
+{% block breadcrumb %}
+Model Performansı
+{% endblock %}
+
+
+{% block content %}
+
+<div class="model-performance-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="page-eyebrow">
+                <span class="eyebrow-dot"></span>
+                MODEL PERFORMANSI
+            </div>
+
+            <h1>
+                Model Performansı
+            </h1>
+
+            <p>
+                Müşteri memnuniyeti tahmininde kullanılan modelin
+                test sonuçlarını ve alternatif modellerle karşılaştırmasını inceleyin.
+            </p>
+
+        </div>
+
+
+        <div class="model-status-badge">
+            <span class="status-dot"></span>
+            Aktif Model
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ACTIVE MODEL
+    ====================================================== -->
+
+    <section class="performance-card production-card">
+
+        <div class="production-model-info">
+
+            <div class="model-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+
+            <div>
+
+                <span class="section-label">
+                    KULLANILAN MODEL
+                </span>
+
+                <h2>
+                    Weighted LightGBM
+                </h2>
+
+                <p>
+                    Müşteri memnuniyetsizliği riskini belirlemek için
+                    karşılaştırmalı testler sonucunda seçilen sınıflandırma modeli.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="production-tags">
+
+            <span class="model-tag">
+                LightGBM
+            </span>
+
+            <span class="model-tag success">
+                Aktif
+            </span>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MAIN METRICS
+    ====================================================== -->
+
+    <div class="metric-grid">
+
+
+        <!-- ACCURACY -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon cyan">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+
+                <span class="metric-badge">
+                    Test Verisi
+                </span>
+
+            </div>
+
+            <span class="metric-label">
+                DOĞRULUK
+            </span>
+
+            <strong class="metric-value">
+                77.02%
+            </strong>
+
+            <p>
+                Tüm test örneklerinde modelin doğru tahmin oranı
+            </p>
+
+        </div>
+
+
+
+        <!-- ROC-AUC -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon green">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <span class="metric-badge">
+                    Ayırt Etme
+                </span>
+
+            </div>
+
+            <span class="metric-label">
+                ROC-AUC
+            </span>
+
+            <strong class="metric-value">
+                73.85%
+            </strong>
+
+            <p>
+                Modelin memnun ve memnuniyetsiz müşterileri ayırabilme başarısı
+            </p>
+
+        </div>
+
+
+
+        <!-- RECALL -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon amber">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+
+                <span class="metric-badge">
+                    Risk Tespiti
+                </span>
+
+            </div>
+
+            <span class="metric-label">
+                YAKALAMA ORANI
+            </span>
+
+            <strong class="metric-value">
+                51.83%
+            </strong>
+
+            <p>
+                Gerçek memnuniyetsiz müşterilerin ne kadarının tespit edildiği
+            </p>
+
+        </div>
+
+
+
+        <!-- F1 -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon red">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+
+                <span class="metric-badge">
+                    Dengeli Skor
+                </span>
+
+            </div>
+
+            <span class="metric-label">
+                F1-SCORE
+            </span>
+
+            <strong class="metric-value">
+                50.85%
+            </strong>
+
+            <p>
+                Doğru risk tespiti ile yakalama oranının dengeli özeti
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SECONDARY SECTION
+    ====================================================== -->
+
+    <div class="performance-two-column">
+
+
+        <!-- CLASS PERFORMANCE -->
+
+        <section class="performance-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        RİSKLİ MÜŞTERİ TESPİTİ
+                    </span>
+
+                    <h3>
+                        Memnuniyetsiz Müşteri Performansı
+                    </h3>
+
+                </div>
+
+
+                <span class="small-badge">
+                    Öncelikli Sınıf
+                </span>
+
+            </div>
+
+
+
+            <div class="class-performance">
+
+
+                <div class="class-score">
+
+                    <div class="score-circle">
+
+                        <strong>
+                            49.89%
+                        </strong>
+
+                        <span>
+                            Kesinlik
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="class-metrics">
+
+
+                    <div class="performance-row">
+
+                        <div>
+
+                            <strong>
+                                Kesinlik
+                            </strong>
+
+                            <span>
+                                Riskli olarak işaretlenen tahminlerin doğruluk oranı
+                            </span>
+
+                        </div>
+
+                        <strong>
+                            49.89%
+                        </strong>
+
+                    </div>
+
+                    <div class="performance-bar">
+                        <div style="width: 49.89%;"></div>
+                    </div>
+
+
+
+                    <div class="performance-row">
+
+                        <div>
+
+                            <strong>
+                                Yakalama Oranı
+                            </strong>
+
+                            <span>
+                                Gerçek memnuniyetsiz müşterileri tespit etme oranı
+                            </span>
+
+                        </div>
+
+                        <strong>
+                            51.83%
+                        </strong>
+
+                    </div>
+
+                    <div class="performance-bar">
+                        <div style="width: 51.83%;"></div>
+                    </div>
+
+
+
+                    <div class="performance-row">
+
+                        <div>
+
+                            <strong>
+                                F1-Score
+                            </strong>
+
+                            <span>
+                                Kesinlik ve yakalama oranı arasındaki denge
+                            </span>
+
+                        </div>
+
+                        <strong>
+                            50.85%
+                        </strong>
+
+                    </div>
+
+                    <div class="performance-bar">
+                        <div style="width: 50.85%;"></div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- MODEL INFORMATION -->
+
+        <section class="performance-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        MODEL BİLGİLERİ
+                    </span>
+
+                    <h3>
+                        Kullanılan Model
+                    </h3>
+
+                </div>
+
+
+                <div class="verified-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+            </div>
+
+
+
+            <div class="model-information">
+
+
+                <div class="info-row">
+
+                    <span>
+                        Kullanılan Model
+                    </span>
+
+                    <strong>
+                        Weighted LightGBM
+                    </strong>
+
+                </div>
+
+
+
+                <div class="info-row">
+
+                    <span>
+                        Model Türü
+                    </span>
+
+                    <strong>
+                        Gradient Boosting
+                    </strong>
+
+                </div>
+
+
+
+                <div class="info-row">
+
+                    <span>
+                        Tahmin Problemi
+                    </span>
+
+                    <strong>
+                        Müşteri Memnuniyeti
+                    </strong>
+
+                </div>
+
+
+
+                <div class="info-row">
+
+                    <span>
+                        Öncelikli Hedef
+                    </span>
+
+                    <strong>
+                        Riskli müşterileri tespit etmek
+                    </strong>
+
+                </div>
+
+
+
+                <div class="info-row">
+
+                    <span>
+                        Model Durumu
+                    </span>
+
+                    <strong class="success-text">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Aktif
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODEL COMPARISON
+    ====================================================== -->
+
+    <section class="performance-card comparison-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <span class="section-label">
+                    MODEL KARŞILAŞTIRMASI
+                </span>
+
+                <h3>
+                    Final Model Karşılaştırması
+                </h3>
+
+                <p>
+                    Eğitim sürecinde değerlendirilen ağırlıklandırılmış
+                    modellerin test sonuçları.
+                </p>
+
+            </div>
+
+
+            <span class="small-badge">
+                3 Model
+            </span>
+
+        </div>
+
+
+
+        <div class="table-responsive">
+
+            <table class="model-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Model</th>
+                        <th>Doğruluk</th>
+                        <th>ROC-AUC</th>
+                        <th>Kesinlik</th>
+                        <th>Yakalama</th>
+                        <th>F1-Score</th>
+                        <th>Durum</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <!-- LIGHTGBM -->
+
+                    <tr>
+
+                        <td>
+
+                            <div class="table-model">
+
+                                <span class="model-number">
+                                    1
+                                </span>
+
+                                <strong>
+                                    Weighted LightGBM
+                                </strong>
+
+                            </div>
+
+                        </td>
+
+                        <td>77.02%</td>
+                        <td>73.85%</td>
+                        <td>49.89%</td>
+                        <td>51.83%</td>
+                        <td>50.85%</td>
+
+                        <td>
+
+                            <span class="production-pill">
+                                Aktif Model
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <!-- CATBOOST -->
+
+                    <tr>
+
+                        <td>
+
+                            <div class="table-model">
+
+                                <span class="model-number">
+                                    2
+                                </span>
+
+                                <strong>
+                                    Weighted CatBoost
+                                </strong>
+
+                            </div>
+
+                        </td>
+
+                        <td>77.01%</td>
+                        <td>73.78%</td>
+                        <td>49.88%</td>
+                        <td>51.44%</td>
+                        <td>50.65%</td>
+
+                        <td>
+
+                            <span class="candidate-pill">
+                                Alternatif
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <!-- XGBOOST -->
+
+                    <tr>
+
+                        <td>
+
+                            <div class="table-model">
+
+                                <span class="model-number">
+                                    3
+                                </span>
+
+                                <strong>
+                                    Weighted XGBoost
+                                </strong>
+
+                            </div>
+
+                        </td>
+
+                        <td>76.13%</td>
+                        <td>72.64%</td>
+                        <td>48.10%</td>
+                        <td>51.59%</td>
+                        <td>49.78%</td>
+
+                        <td>
+
+                            <span class="candidate-pill">
+                                Alternatif
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MODEL DECISION
+    ====================================================== -->
+
+    <section class="performance-card decision-card">
+
+        <div class="decision-icon">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+
+
+        <div>
+
+            <span class="section-label">
+                MODEL SEÇİMİ
+            </span>
+
+            <h3>
+                Neden Weighted LightGBM?
+            </h3>
+
+            <p>
+                Final karşılaştırmada Weighted LightGBM;
+                %77.02 doğruluk, %73.85 ROC-AUC ve %50.85
+                memnuniyetsiz müşteri F1-Score sonucu ile
+                kullanılan model olarak seçildi.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+
+<style>
+
+/* =========================================================
+   MODEL PERFORMANCE PAGE
+========================================================= */
+
+.model-performance-page {
+    padding: 38px 40px 60px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.page-eyebrow,
+.section-label {
+    color: #62e6d1;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.eyebrow-dot {
+    display: inline-block;
+
+    width: 7px;
+    height: 7px;
+
+    margin-right: 8px;
+
+    border-radius: 50%;
+
+    background: #62e6d1;
+
+    box-shadow:
+        0 0 12px rgba(98, 230, 209, 0.7);
+}
+
+.page-header h1 {
+    margin: 12px 0 8px;
+
+    color: #ffffff;
+
+    font-size: 38px;
+    line-height: 1.1;
+}
+
+.page-header p {
+    margin: 0;
+
+    color: #7ea0bb;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.model-status-badge {
+    padding: 11px 16px;
+
+    border: 1px solid #23445c;
+    border-radius: 12px;
+
+    background: #10283a;
+
+    color: #c7dbea;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-dot {
+    display: inline-block;
+
+    width: 7px;
+    height: 7px;
+
+    margin-right: 7px;
+
+    border-radius: 50%;
+
+    background: #39d98a;
+}
+
+
+/* =========================================================
+   COMMON CARDS
+========================================================= */
+
+.performance-card,
+.metric-card {
+    border: 1px solid #21445d;
+    border-radius: 16px;
+
+    background: #10293d;
+}
+
+.performance-card {
+    padding: 24px;
+}
+
+
+/* =========================================================
+   ACTIVE MODEL
+========================================================= */
+
+.production-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(44, 203, 183, 0.08),
+            rgba(16, 41, 61, 1) 50%
+        );
+}
+
+.production-model-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.model-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 56px;
+    height: 56px;
+
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    background: rgba(54, 214, 190, 0.12);
+
+    color: #55e2ce;
+
+    font-size: 23px;
+}
+
+.production-card h2 {
+    margin: 5px 0;
+
+    color: #ffffff;
+
+    font-size: 23px;
+}
+
+.production-card p,
+.section-header p {
+    margin: 0;
+
+    color: #7899b3;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.production-tags {
+    display: flex;
+    gap: 8px;
+}
+
+.model-tag {
+    padding: 7px 12px;
+
+    border: 1px solid #28506b;
+    border-radius: 20px;
+
+    background: #162f43;
+
+    color: #8fb0c7;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.model-tag.success {
+    background: rgba(57, 217, 138, 0.08);
+
+    color: #41d994;
+}
+
+
+/* =========================================================
+   METRICS
+========================================================= */
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+.metric-card {
+    padding: 20px;
+}
+
+.metric-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.metric-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 39px;
+    height: 39px;
+
+    border-radius: 11px;
+}
+
+.metric-icon.cyan {
+    background: rgba(48, 205, 192, 0.12);
+    color: #42d7c9;
+}
+
+.metric-icon.green {
+    background: rgba(55, 211, 139, 0.12);
+    color: #39d98a;
+}
+
+.metric-icon.amber {
+    background: rgba(239, 181, 70, 0.12);
+    color: #efb546;
+}
+
+.metric-icon.red {
+    background: rgba(235, 104, 104, 0.12);
+    color: #eb6868;
+}
+
+.metric-badge,
+.small-badge {
+    padding: 5px 9px;
+
+    border: 1px solid #28506a;
+    border-radius: 8px;
+
+    color: #78a1bc;
+
+    font-size: 10px;
+}
+
+.metric-label {
+    display: block;
+
+    color: #779bb7;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.metric-value {
+    display: block;
+
+    margin: 7px 0;
+
+    color: #ffffff;
+
+    font-size: 29px;
+}
+
+.metric-card p {
+    margin: 0;
+
+    color: #6e91ab;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   TWO COLUMN
+========================================================= */
+
+.performance-two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+.section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.section-header h3 {
+    margin: 5px 0;
+
+    color: #ffffff;
+
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   CLASS PERFORMANCE
+========================================================= */
+
+.class-performance {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    gap: 30px;
+}
+
+.score-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 125px;
+    height: 125px;
+
+    border: 10px solid #285269;
+    border-top-color: #55dfca;
+    border-radius: 50%;
+}
+
+.score-circle strong {
+    color: #ffffff;
+    font-size: 21px;
+}
+
+.score-circle span {
+    color: #7195af;
+    font-size: 10px;
+}
+
+.performance-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-top: 12px;
+
+    color: #ffffff;
+}
+
+.performance-row > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.performance-row span {
+    margin-top: 3px;
+
+    color: #6f91aa;
+
+    font-size: 10px;
+}
+
+.performance-bar {
+    height: 6px;
+
+    margin-top: 8px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #29475b;
+}
+
+.performance-bar div {
+    height: 100%;
+
+    border-radius: 10px;
+
+    background: #58ddc8;
+}
+
+
+/* =========================================================
+   MODEL INFORMATION
+========================================================= */
+
+.model-information {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #1d3c52;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row span {
+    color: #7395ad;
+
+    font-size: 12px;
+}
+
+.info-row strong {
+    max-width: 58%;
+
+    color: #d9e8f2;
+
+    text-align: right;
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.success-text,
+.verified-icon {
+    color: #40d994 !important;
+}
+
+
+/* =========================================================
+   MODEL TABLE
+========================================================= */
+
+.comparison-card {
+    margin-bottom: 18px;
+}
+
+.table-responsive {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.model-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.model-table th {
+    padding: 13px 12px;
+
+    border-bottom: 1px solid #24465e;
+
+    color: #688da8;
+
+    text-align: left;
+
+    font-size: 10px;
+    letter-spacing: 0.8px;
+}
+
+.model-table td {
+    padding: 17px 12px;
+
+    border-bottom: 1px solid #19384e;
+
+    color: #c8dce9;
+
+    font-size: 12px;
+}
+
+.model-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-model {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.model-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    background: #14354a;
+
+    color: #55ddc9;
+
+    font-weight: 800;
+}
+
+.production-pill,
+.candidate-pill {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.production-pill {
+    background: rgba(57, 217, 138, 0.1);
+
+    color: #40db92;
+}
+
+.candidate-pill {
+    background: rgba(93, 132, 160, 0.12);
+
+    color: #83a6bd;
+}
+
+
+/* =========================================================
+   MODEL DECISION
+========================================================= */
+
+.decision-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(239, 181, 70, 0.07),
+            #10293d 35%
+        );
+}
+
+.decision-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    border-radius: 13px;
+
+    background: rgba(239, 181, 70, 0.12);
+
+    color: #efb546;
+
+    font-size: 19px;
+}
+
+.decision-card h3 {
+    margin: 4px 0 5px;
+
+    color: #ffffff;
+}
+
+.decision-card p {
+    margin: 0;
+
+    color: #7c9cb4;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .performance-two-column {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .model-performance-page {
+        padding: 25px 18px 45px;
+    }
+
+    .page-header,
+    .production-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .class-performance {
+        grid-template-columns: 1fr;
+    }
+
+    .production-tags {
+        flex-wrap: wrap;
+    }
+
+    .info-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .info-row strong {
+        max-width: none;
+        text-align: left;
+    }
+
+}
+
+</style>
+
+{% endblock %}

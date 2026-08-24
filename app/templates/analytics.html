@@ -1,0 +1,1161 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Veri Analizi | Customer Intelligence Platform
+{% endblock %}
+
+
+{% block breadcrumb %}
+Veri Analizi
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =========================================================
+     PAGE HEADER
+========================================================= -->
+
+<div class="page-header">
+
+    <div>
+
+        <p class="live-label">
+            <span class="live-dot"></span>
+            CUSTOMER ANALYTICS
+        </p>
+
+        <h1>Veri Analizi</h1>
+
+        <p class="page-subtitle">
+            MySQL veritabanındaki gerçek model tahminlerini;
+            müşteri, kategori, ödeme ve teslimat boyutlarında analiz edin.
+        </p>
+
+    </div>
+
+
+    <div class="page-actions">
+
+        <span class="secondary-button">
+            <i class="fa-solid fa-database"></i>
+            {{ analytics_summary.total_predictions }} Kayıt
+        </span>
+
+
+        <a
+            href="{{ url_for('prediction_page') }}"
+            class="primary-button"
+        >
+            <i class="fa-solid fa-plus"></i>
+            Yeni Tahmin
+        </a>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     DATA QUALITY NOTICE
+========================================================= -->
+
+{% if analytics_summary.total_predictions < 10 %}
+
+<div class="analytics-data-notice">
+
+    <i class="fa-solid fa-circle-info"></i>
+
+    <div>
+
+        <strong>
+            Analiz veri seti henüz küçük
+        </strong>
+
+        <p>
+            Şu anda {{ analytics_summary.total_predictions }} gerçek tahmin
+            kaydı bulunuyor. Yeni tahminler oluşturuldukça karşılaştırmalı
+            analizler daha anlamlı hale gelecektir.
+        </p>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<!-- =========================================================
+     KPI CARDS
+========================================================= -->
+
+<div class="metric-grid analytics-metrics">
+
+
+    <!-- TOTAL PREDICTIONS -->
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon aqua">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+
+            <span class="metric-change neutral">
+                MySQL
+            </span>
+
+        </div>
+
+        <p class="metric-label">
+            Toplam Tahmin
+        </p>
+
+        <h2>
+            {{ analytics_summary.total_predictions }}
+        </h2>
+
+        <p class="metric-note">
+            Analiz kapsamındaki gerçek model kayıtları
+        </p>
+
+    </div>
+
+
+
+    <!-- SATISFACTION -->
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon green">
+                <i class="fa-solid fa-face-smile"></i>
+            </div>
+
+            <span class="metric-change positive">
+                Model
+            </span>
+
+        </div>
+
+        <p class="metric-label">
+            Ortalama Memnuniyet
+        </p>
+
+        <h2>
+            {{ "%.1f"|format(metrics.average_satisfaction) }}%
+        </h2>
+
+        <p class="metric-note">
+            Model tahminlerinin ortalama memnuniyet olasılığı
+        </p>
+
+    </div>
+
+
+
+    <!-- ORDER VALUE -->
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon yellow">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+
+            <span class="metric-change neutral">
+                R$
+            </span>
+
+        </div>
+
+        <p class="metric-label">
+            Ortalama Sipariş Değeri
+        </p>
+
+        <h2>
+            {{ "%.2f"|format(analytics_summary.average_order_value) }}
+        </h2>
+
+        <p class="metric-note">
+            Tahmin kayıtlarının ortalama sipariş tutarı
+        </p>
+
+    </div>
+
+
+
+    <!-- DELIVERY TIME -->
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon coral">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+
+            <span class="metric-change neutral">
+                Gün
+            </span>
+
+        </div>
+
+        <p class="metric-label">
+            Ortalama Teslimat Süresi
+        </p>
+
+        <h2>
+            {{ "%.1f"|format(delivery_statistics.average_delivery_time) }}
+        </h2>
+
+        <p class="metric-note">
+            Siparişlerin ortalama teslimat süresi
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     ANALYTICS GRID
+========================================================= -->
+
+<div class="analytics-grid">
+
+
+
+    <!-- =====================================================
+         RISK DISTRIBUTION
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    RİSK DAĞILIMI
+                </p>
+
+                <h3>
+                    Risk Segmentasyonu
+                </h3>
+
+            </div>
+
+            <span class="card-chip">
+                {{ risk_distribution.total }} Tahmin
+            </span>
+
+        </div>
+
+
+        {% if risk_distribution.total > 0 %}
+
+        <div class="analytics-risk-summary">
+
+
+            <div class="analytics-risk-total">
+
+                <div class="analytics-risk-total-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ risk_distribution.total }}
+                    </strong>
+
+                    <span>
+                        Toplam Tahmin
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="analytics-risk-list">
+
+
+                <!-- LOW -->
+
+                <div class="analytics-risk-item">
+
+                    <div class="analytics-risk-label">
+
+                        <span class="analytics-risk-dot low"></span>
+
+                        <div>
+                            <strong>Düşük Risk</strong>
+                            <small>
+                                {{ risk_distribution.counts.low }} kayıt
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <strong>
+                        {{ "%.1f"|format(risk_distribution.percentages.low) }}%
+                    </strong>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress low"
+                    value="{{ risk_distribution.percentages.low }}"
+                    max="100"
+                ></progress>
+
+
+
+                <!-- MEDIUM -->
+
+                <div class="analytics-risk-item">
+
+                    <div class="analytics-risk-label">
+
+                        <span class="analytics-risk-dot medium"></span>
+
+                        <div>
+                            <strong>Orta Risk</strong>
+                            <small>
+                                {{ risk_distribution.counts.medium }} kayıt
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <strong>
+                        {{ "%.1f"|format(risk_distribution.percentages.medium) }}%
+                    </strong>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress medium"
+                    value="{{ risk_distribution.percentages.medium }}"
+                    max="100"
+                ></progress>
+
+
+
+                <!-- HIGH -->
+
+                <div class="analytics-risk-item">
+
+                    <div class="analytics-risk-label">
+
+                        <span class="analytics-risk-dot high"></span>
+
+                        <div>
+                            <strong>Yüksek Risk</strong>
+                            <small>
+                                {{ risk_distribution.counts.high }} kayıt
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <strong>
+                        {{ "%.1f"|format(risk_distribution.percentages.high) }}%
+                    </strong>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress high"
+                    value="{{ risk_distribution.percentages.high }}"
+                    max="100"
+                ></progress>
+
+
+            </div>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            <strong>
+                Risk verisi henüz oluşmadı
+            </strong>
+
+            <p>
+                İlk tahmin oluşturulduğunda risk dağılımı burada görüntülenecek.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DELIVERY PERFORMANCE
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    TESLİMAT PERFORMANSI
+                </p>
+
+                <h3>
+                    Delivery Analytics
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="delivery-analytics-grid">
+
+
+            <!-- ON TIME -->
+
+            <div class="delivery-stat">
+
+                <span class="delivery-stat-icon success">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+
+                <div>
+
+                    <span>
+                        Zamanında
+                    </span>
+
+                    <strong>
+                        {{ delivery_statistics.on_time_predictions }}
+                    </strong>
+
+                    <small>
+                        {{ "%.1f"|format(delivery_statistics.on_time_percentage) }}%
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- DELAYED -->
+
+            <div class="delivery-stat">
+
+                <span class="delivery-stat-icon danger">
+                    <i class="fa-solid fa-clock"></i>
+                </span>
+
+                <div>
+
+                    <span>
+                        Gecikmeli
+                    </span>
+
+                    <strong>
+                        {{ delivery_statistics.delayed_predictions }}
+                    </strong>
+
+                    <small>
+                        {{ "%.1f"|format(delivery_statistics.delayed_percentage) }}%
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EARLY -->
+
+            <div class="delivery-stat">
+
+                <span class="delivery-stat-icon aqua">
+                    <i class="fa-solid fa-bolt"></i>
+                </span>
+
+                <div>
+
+                    <span>
+                        Erken Teslim
+                    </span>
+
+                    <strong>
+                        {{ delivery_statistics.early_predictions }}
+                    </strong>
+
+                    <small>
+                        {{ "%.1f"|format(delivery_statistics.early_percentage) }}%
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="analytics-detail-list">
+
+            <div>
+
+                <span>
+                    Ortalama teslimat süresi
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(delivery_statistics.average_delivery_time) }}
+                    gün
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Ortalama gecikme
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(delivery_statistics.average_delivery_delay) }}
+                    gün
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CATEGORY ANALYSIS
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card analytics-wide">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    KATEGORİ PERFORMANSI
+                </p>
+
+                <h3>
+                    Kategori Bazlı Memnuniyet
+                </h3>
+
+            </div>
+
+            <span class="card-chip">
+                {{ category_statistics|length }} Kategori
+            </span>
+
+        </div>
+
+
+        {% if category_statistics %}
+
+        <div class="analytics-ranking-list">
+
+            {% for item in category_statistics %}
+
+            <div class="analytics-ranking-row">
+
+
+                <div class="analytics-ranking-main">
+
+                    <span class="analytics-rank">
+                        {{ loop.index }}
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            {{
+                                item.category
+                                | replace("_", " ")
+                                | title
+                            }}
+                        </strong>
+
+                        <small>
+                            {{ item.prediction_count }} tahmin
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="analytics-score-area">
+
+                    <div class="analytics-score-heading">
+
+                        <span>
+                            Memnuniyet
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(item.average_satisfaction) }}%
+                        </strong>
+
+                    </div>
+
+
+                    <progress
+                        class="analytics-progress satisfaction"
+                        value="{{ item.average_satisfaction }}"
+                        max="100"
+                    ></progress>
+
+                </div>
+
+
+
+                <div class="analytics-secondary-score">
+
+                    <span>
+                        Memnuniyetsizlik
+                    </span>
+
+                    <strong>
+                        {{ "%.1f"|format(item.average_unsatisfaction) }}%
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-solid fa-tags"></i>
+
+            <strong>
+                Kategori verisi bulunmuyor
+            </strong>
+
+            <p>
+                Kategori içeren tahmin kayıtları burada analiz edilecektir.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         STATE ANALYSIS
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    COĞRAFİ ANALİZ
+                </p>
+
+                <h3>
+                    Eyalet Performansı
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        {% if state_statistics %}
+
+        <div class="analytics-table-wrapper">
+
+            <table class="analytics-table">
+
+                <thead>
+
+                <tr>
+                    <th>Eyalet</th>
+                    <th>Tahmin</th>
+                    <th>Memnuniyet</th>
+                    <th>Gecikme</th>
+                    <th>Yüksek Risk</th>
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for item in state_statistics %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ item.state }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ item.prediction_count }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ "%.1f"|format(item.average_satisfaction) }}%
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(item.average_delivery_delay) }}
+                        gün
+                    </td>
+
+                    <td>
+
+                        {% if item.high_risk_percentage >= 30 %}
+
+                        <span class="risk-badge high">
+                            {{ "%.1f"|format(item.high_risk_percentage) }}%
+                        </span>
+
+                        {% elif item.high_risk_percentage >= 10 %}
+
+                        <span class="risk-badge medium">
+                            {{ "%.1f"|format(item.high_risk_percentage) }}%
+                        </span>
+
+                        {% else %}
+
+                        <span class="risk-badge low">
+                            {{ "%.1f"|format(item.high_risk_percentage) }}%
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-solid fa-map-location-dot"></i>
+
+            <strong>
+                Eyalet verisi bulunmuyor
+            </strong>
+
+            <p>
+                Eyalet bilgisi bulunan tahminler burada karşılaştırılacaktır.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PAYMENT ANALYSIS
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    ÖDEME ANALİZİ
+                </p>
+
+                <h3>
+                    Payment Behaviour
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        {% if payment_statistics %}
+
+        <div class="payment-analysis-list">
+
+            {% for item in payment_statistics %}
+
+            <div class="payment-analysis-item">
+
+
+                <div class="payment-analysis-heading">
+
+                    <span class="payment-analysis-icon">
+                        <i class="fa-regular fa-credit-card"></i>
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            {{
+                                item.payment_type
+                                | replace("_", " ")
+                                | title
+                            }}
+                        </strong>
+
+                        <span>
+                            {{ item.prediction_count }} tahmin
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="payment-analysis-values">
+
+
+                    <div>
+
+                        <span>
+                            Memnuniyet
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(item.average_satisfaction) }}%
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Ort. Sipariş
+                        </span>
+
+                        <strong>
+                            R$ {{ "%.2f"|format(item.average_order_value) }}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Ort. Taksit
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(item.average_installments) }}
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-regular fa-credit-card"></i>
+
+            <strong>
+                Ödeme analizi için veri bulunmuyor
+            </strong>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SATISFACTION TREND
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card analytics-wide">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    30 GÜNLÜK TREND
+                </p>
+
+                <h3>
+                    Memnuniyet Eğilimi
+                </h3>
+
+            </div>
+
+            <span class="card-chip">
+                {{ satisfaction_trend|length }} Gün
+            </span>
+
+        </div>
+
+
+        {% if satisfaction_trend %}
+
+        <div class="analytics-trend-list">
+
+            {% for item in satisfaction_trend %}
+
+            <div class="analytics-trend-row">
+
+
+                <div class="analytics-trend-date">
+
+                    <strong>
+                        {{ item.date.strftime("%d.%m.%Y") }}
+                    </strong>
+
+                    <span>
+                        {{ item.prediction_count }} tahmin
+                    </span>
+
+                </div>
+
+
+
+                <div class="analytics-trend-bar">
+
+                    <progress
+                        class="analytics-progress satisfaction"
+                        value="{{ item.average_satisfaction }}"
+                        max="100"
+                    ></progress>
+
+                </div>
+
+
+
+                <strong class="analytics-trend-value">
+
+                    {{ "%.1f"|format(item.average_satisfaction) }}%
+
+                </strong>
+
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+            <strong>
+                Trend verisi henüz bulunmuyor
+            </strong>
+
+            <p>
+                Tahminler yapıldıkça günlük eğilim burada görüntülenecek.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ORDER PROFILE
+    ====================================================== -->
+
+    <section class="dashboard-card analytics-card analytics-wide">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    SİPARİŞ PROFİLİ
+                </p>
+
+                <h3>
+                    Genel Sipariş ve Ürün Özeti
+                </h3>
+
+            </div>
+
+        </div>
+
+
+        <div class="analytics-summary-grid">
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama kargo
+                </span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(analytics_summary.average_freight) }}
+                </strong>
+
+            </div>
+
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama ürün sayısı
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(analytics_summary.average_products) }}
+                </strong>
+
+            </div>
+
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama kategori
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(analytics_summary.average_categories) }}
+                </strong>
+
+            </div>
+
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama ürün fiyatı
+                </span>
+
+                <strong>
+                    R$ {{ "%.2f"|format(analytics_summary.average_product_price) }}
+                </strong>
+
+            </div>
+
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama ürün ağırlığı
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(analytics_summary.average_product_weight) }}
+                    g
+                </strong>
+
+            </div>
+
+
+
+            <div class="analytics-summary-item">
+
+                <span>
+                    Ortalama fotoğraf
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(analytics_summary.average_product_photos) }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,2822 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Yeni Tahmin | Customer Intelligence Platform
+{% endblock %}
+
+
+{% block breadcrumb %}
+Yeni Tahmin
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <p class="live-label">
+            <span class="live-dot"></span>
+            LIVE SATISFACTION PREDICTION
+        </p>
+
+        <h1>
+            Yeni Müşteri Memnuniyeti Tahmini
+        </h1>
+
+        <p class="page-subtitle">
+            Sipariş, ödeme, ürün ve teslimat bilgilerini kullanarak müşterinin
+            memnuniyet olasılığını ve risk seviyesini tahmin edin.
+        </p>
+
+    </div>
+
+
+    <div class="page-actions">
+
+        <button
+            class="secondary-button"
+            type="button"
+            id="reset-form"
+        >
+            <i class="fa-solid fa-rotate-left"></i>
+            Formu Temizle
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="prediction-workspace">
+
+
+    <!-- =====================================================
+         INPUT FORM
+    ====================================================== -->
+
+    <section class="dashboard-card prediction-form-card">
+
+        <div class="prediction-stepper">
+
+            <div class="step active">
+
+                <span>1</span>
+
+                <div>
+                    <strong>Bilgi Girişi</strong>
+                    <small>Müşteri ve sipariş</small>
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <span>2</span>
+
+                <div>
+                    <strong>Değerlendirme</strong>
+                    <small>Model analizi</small>
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <span>3</span>
+
+                <div>
+                    <strong>Sonuç</strong>
+                    <small>Risk ve aksiyon</small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <form id="prediction-form">
+
+
+            <!-- =================================================
+                 01 CUSTOMER
+            ================================================== -->
+
+            <div class="prediction-section">
+
+                <div class="prediction-section-heading">
+
+                    <div class="section-icon">
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+
+                    <div>
+                        <span>01</span>
+                        <h3>Müşteri ve Ödeme</h3>
+                        <p>Müşteri konumu ve ödeme tercihleri.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="prediction-form-grid">
+
+                    <div class="form-field">
+
+                        <label for="customer_state">
+                            Müşteri Eyaleti
+                        </label>
+
+                        <select
+                            id="customer_state"
+                            required
+                        >
+                            <option value="">Eyalet seçin</option>
+                            <option value="SP">São Paulo — SP</option>
+                            <option value="RJ">Rio de Janeiro — RJ</option>
+                            <option value="MG">Minas Gerais — MG</option>
+                            <option value="PR">Paraná — PR</option>
+                            <option value="RS">Rio Grande do Sul — RS</option>
+                            <option value="SC">Santa Catarina — SC</option>
+                            <option value="BA">Bahia — BA</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="payment_type">
+                            Ödeme Türü
+                        </label>
+
+                        <select
+                            id="payment_type"
+                            required
+                        >
+                            <option value="">Ödeme türü seçin</option>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="boleto">Boleto</option>
+                            <option value="voucher">Voucher</option>
+                            <option value="debit_card">Debit Card</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="payment_installments">
+                            Taksit Sayısı
+                        </label>
+
+                        <div class="input-with-icon">
+
+                            <i class="fa-regular fa-credit-card"></i>
+
+                            <input
+                                id="payment_installments"
+                                type="number"
+                                min="1"
+                                max="24"
+                                value="2"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="purchase_datetime">
+                            Sipariş Tarihi ve Saati
+                        </label>
+
+                        <input
+                            id="purchase_datetime"
+                            type="datetime-local"
+                            required
+                        >
+
+                        <small class="field-helper">
+                            Hafta sonu bilgisi ve tarih özellikleri otomatik hesaplanır.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 02 ORDER
+            ================================================== -->
+
+            <div class="prediction-section">
+
+                <div class="prediction-section-heading">
+
+                    <div class="section-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+
+                    <div>
+                        <span>02</span>
+                        <h3>Sipariş Bilgileri</h3>
+                        <p>Sipariş değeri ve ürün çeşitliliği.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="prediction-form-grid">
+
+                    <div class="form-field">
+
+                        <label for="total_price">
+                            Ürün Toplam Tutarı
+                        </label>
+
+                        <div class="input-with-prefix">
+
+                            <span>R$</span>
+
+                            <input
+                                id="total_price"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value="150"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="total_freight">
+                            Kargo Ücreti
+                        </label>
+
+                        <div class="input-with-prefix">
+
+                            <span>R$</span>
+
+                            <input
+                                id="total_freight"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value="20"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="total_products">
+                            Toplam Ürün Sayısı
+                        </label>
+
+                        <input
+                            id="total_products"
+                            type="number"
+                            min="1"
+                            value="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="unique_categories">
+                            Benzersiz Kategori Sayısı
+                        </label>
+
+                        <input
+                            id="unique_categories"
+                            type="number"
+                            min="1"
+                            value="1"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 03 DELIVERY
+            ================================================== -->
+
+            <div class="prediction-section">
+
+                <div class="prediction-section-heading">
+
+                    <div class="section-icon">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+
+                    <div>
+                        <span>03</span>
+                        <h3>Teslimat Bilgileri</h3>
+                        <p>Teslimat süreci modelin önemli risk sinyallerindendir.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="prediction-form-grid">
+
+                    <div class="form-field">
+
+                        <label for="approval_time_days">
+                            Sipariş Onay Süresi
+                        </label>
+
+                        <div class="input-with-suffix">
+
+                            <input
+                                id="approval_time_days"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                value="0.5"
+                                required
+                            >
+
+                            <span>gün</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="delivery_time_days">
+                            Toplam Teslimat Süresi
+                        </label>
+
+                        <div class="input-with-suffix">
+
+                            <input
+                                id="delivery_time_days"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                value="8"
+                                required
+                            >
+
+                            <span>gün</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="carrier_delivery_days">
+                            Kargo Taşıma Süresi
+                        </label>
+
+                        <div class="input-with-suffix">
+
+                            <input
+                                id="carrier_delivery_days"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                value="5"
+                                required
+                            >
+
+                            <span>gün</span>
+
+                        </div>
+
+                        <small class="field-helper">
+                            Kargoya verildikten müşteriye teslim edilene kadar geçen süre.
+                        </small>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="delivery_delay_days">
+                            Tahmini Tarihe Göre Gecikme
+                        </label>
+
+                        <div class="input-with-suffix">
+
+                            <input
+                                id="delivery_delay_days"
+                                type="number"
+                                step="0.1"
+                                value="0"
+                                required
+                            >
+
+                            <span>gün</span>
+
+                        </div>
+
+                        <small class="field-helper">
+                            Erken teslimat için negatif değer kullanılabilir.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 04 PRODUCT
+            ================================================== -->
+
+            <div class="prediction-section">
+
+                <div class="prediction-section-heading">
+
+                    <div class="section-icon">
+                        <i class="fa-solid fa-tag"></i>
+                    </div>
+
+                    <div>
+                        <span>04</span>
+                        <h3>Ürün Bilgileri</h3>
+                        <p>Siparişteki ürünlerin temel özellikleri.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="prediction-form-grid">
+
+                    <div class="form-field">
+
+                        <label for="primary_product_category">
+                            Ana Ürün Kategorisi
+                        </label>
+
+                        <select
+                            id="primary_product_category"
+                            required
+                        >
+                            <option value="bed_bath_table">
+                                Bed Bath Table
+                            </option>
+
+                            <option value="health_beauty">
+                                Health & Beauty
+                            </option>
+
+                            <option value="sports_leisure">
+                                Sports & Leisure
+                            </option>
+
+                            <option value="furniture_decor">
+                                Furniture Decor
+                            </option>
+
+                            <option value="computers_accessories">
+                                Computers & Accessories
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="average_product_price">
+                            Ortalama Ürün Fiyatı
+                        </label>
+
+                        <div class="input-with-prefix">
+
+                            <span>R$</span>
+
+                            <input
+                                id="average_product_price"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value="150"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="average_product_weight">
+                            Ortalama Ürün Ağırlığı
+                        </label>
+
+                        <div class="input-with-suffix">
+
+                            <input
+                                id="average_product_weight"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                value="1200"
+                                required
+                            >
+
+                            <span>g</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-field">
+
+                        <label for="average_product_photos">
+                            Ortalama Fotoğraf Sayısı
+                        </label>
+
+                        <input
+                            id="average_product_photos"
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            value="2"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Advanced attributes -->
+
+                <details class="prediction-advanced">
+
+                    <summary>
+                        <span>
+                            <i class="fa-solid fa-sliders"></i>
+                            Gelişmiş ürün ölçüleri
+                        </span>
+
+                        <small>
+                            Model girdileri
+                        </small>
+                    </summary>
+
+
+                    <div class="prediction-form-grid advanced-grid">
+
+                        <div class="form-field">
+
+                            <label for="average_product_length">
+                                Ortalama Uzunluk
+                            </label>
+
+                            <div class="input-with-suffix">
+
+                                <input
+                                    id="average_product_length"
+                                    type="number"
+                                    min="0"
+                                    step="0.1"
+                                    value="30"
+                                    required
+                                >
+
+                                <span>cm</span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="average_product_height">
+                                Ortalama Yükseklik
+                            </label>
+
+                            <div class="input-with-suffix">
+
+                                <input
+                                    id="average_product_height"
+                                    type="number"
+                                    min="0"
+                                    step="0.1"
+                                    value="15"
+                                    required
+                                >
+
+                                <span>cm</span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="average_product_width">
+                                Ortalama Genişlik
+                            </label>
+
+                            <div class="input-with-suffix">
+
+                                <input
+                                    id="average_product_width"
+                                    type="number"
+                                    min="0"
+                                    step="0.1"
+                                    value="25"
+                                    required
+                                >
+
+                                <span>cm</span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </details>
+
+            </div>
+
+
+            <div class="form-review-strip">
+
+                <div>
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <span>
+                        Girilen bilgiler yalnızca tahmin oluşturmak için kullanılır.
+                    </span>
+
+                </div>
+
+                <span>
+                    27 model özelliği tutarlı biçimde hazırlanır
+                </span>
+
+            </div>
+
+
+            <button
+                class="prediction-submit"
+                id="prediction-submit"
+                type="submit"
+            >
+
+                <span>
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Tahmini Hesapla
+                </span>
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =====================================================
+         CENTER RESULT
+    ====================================================== -->
+
+    <div class="prediction-center-column">
+
+        <section class="dashboard-card prediction-result-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        TAHMİN SONUCU
+                    </p>
+
+                    <h3>
+                        Memnuniyet Skoru
+                    </h3>
+
+                </div>
+
+                <span
+                    class="analysis-status"
+                    id="analysis-status"
+                >
+                    Bekleniyor
+                </span>
+
+            </div>
+
+
+            <div
+                class="prediction-empty"
+                id="prediction-empty"
+            >
+
+                <div class="prediction-empty-icon">
+                    <i class="fa-solid fa-wave-square"></i>
+                </div>
+
+                <strong>
+                    Tahmin hazır değil
+                </strong>
+
+                <p>
+                    Form bilgilerini doldurup tahmin butonuna basın.
+                </p>
+
+            </div>
+
+
+            <div
+                class="prediction-result"
+                id="prediction-result"
+                hidden
+            >
+
+                <div
+                    class="score-ring"
+                    id="score-ring"
+                >
+
+                    <div class="score-ring-inner">
+
+                        <strong id="satisfaction-score">
+                            0%
+                        </strong>
+
+                        <span>
+                            Memnuniyet
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="prediction-verdict"
+                    id="prediction-verdict"
+                >
+                    —
+                </div>
+
+
+                <p
+                    class="prediction-summary"
+                    id="prediction-summary"
+                ></p>
+
+
+                <div class="probability-comparison">
+
+                    <div class="probability-box">
+
+                        <div>
+
+                            <span>
+                                Memnun
+                            </span>
+
+                            <strong id="satisfied-probability">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="probability-bar">
+
+                            <div
+                                class="probability-fill satisfied"
+                                id="satisfied-bar"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="probability-box">
+
+                        <div>
+
+                            <span>
+                                Memnun Değil
+                            </span>
+
+                            <strong id="unsatisfied-probability">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="probability-bar">
+
+                            <div
+                                class="probability-fill unsatisfied"
+                                id="unsatisfied-bar"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        RİSK DEĞERLENDİRMESİ
+                    </p>
+
+                    <h3>
+                        Müşteri Risk Profili
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="risk-assessment">
+
+                <div
+                    class="risk-assessment-icon"
+                    id="risk-assessment-icon"
+                >
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+
+                <div class="risk-assessment-content">
+
+                    <span>
+                        GENEL RİSK SEVİYESİ
+                    </span>
+
+                    <strong id="risk-level">
+                        Bekleniyor
+                    </strong>
+
+                    <p id="risk-description">
+                        Risk seviyesi tahmin sonrasında otomatik olarak hesaplanacaktır.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="risk-meter">
+
+                <span>
+                    Düşük
+                </span>
+
+                <div class="risk-meter-track">
+
+                    <div
+                        class="risk-meter-pointer"
+                        id="risk-meter-pointer"
+                    ></div>
+
+                </div>
+
+                <span>
+                    Yüksek
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        SİPARİŞ SİNYALLERİ
+                    </p>
+
+                    <h3>
+                        Risk Göstergeleri
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="signal-list">
+
+                <div class="signal-item">
+
+                    <span class="signal-icon delivery">
+                        <i class="fa-solid fa-clock"></i>
+                    </span>
+
+                    <div>
+                        <strong>Teslimat Gecikmesi</strong>
+                        <span id="delivery-signal">
+                            Tahmin bekleniyor
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="signal-item">
+
+                    <span class="signal-icon freight">
+                        <i class="fa-solid fa-truck"></i>
+                    </span>
+
+                    <div>
+                        <strong>Kargo Maliyeti</strong>
+                        <span id="freight-signal">
+                            Tahmin bekleniyor
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="signal-item">
+
+                    <span class="signal-icon payment">
+                        <i class="fa-regular fa-credit-card"></i>
+                    </span>
+
+                    <div>
+                        <strong>Ödeme Yapısı</strong>
+                        <span id="payment-signal">
+                            Tahmin bekleniyor
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- =====================================================
+         RIGHT COLUMN
+    ====================================================== -->
+
+    <div class="prediction-right-column">
+
+        <section class="dashboard-card compact-card">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="card-label">SİSTEM AKIŞI</p>
+                    <h3>Nasıl Çalışır?</h3>
+                </div>
+
+            </div>
+
+
+            <div class="process-list">
+
+                <div class="process-item">
+                    <span>01</span>
+
+                    <div>
+                        <strong>Sipariş Verisi</strong>
+                        <p>Form girdileri alınır.</p>
+                    </div>
+                </div>
+
+                <div class="process-line"></div>
+
+                <div class="process-item">
+                    <span>02</span>
+
+                    <div>
+                        <strong>Özellik Hazırlama</strong>
+                        <p>27 model özelliği tutarlı şekilde hazırlanır.</p>
+                    </div>
+                </div>
+
+                <div class="process-line"></div>
+
+                <div class="process-item">
+                    <span>03</span>
+
+                    <div>
+                        <strong>ML Tahmini</strong>
+                        <p>Eğitilmiş model olasılık üretir.</p>
+                    </div>
+                </div>
+
+                <div class="process-line"></div>
+
+                <div class="process-item">
+                    <span>04</span>
+
+                    <div>
+                        <strong>Risk & Aksiyon</strong>
+                        <p>Tahmin iş kararına dönüştürülür.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-card action-card">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="card-label">ÖNERİLEN AKSİYON</p>
+                    <h3>Next Best Action</h3>
+                </div>
+
+            </div>
+
+
+            <div class="recommended-action-main">
+
+                <span class="recommended-action-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </span>
+
+                <div>
+
+                    <strong id="recommended-action">
+                        Tahmin bekleniyor
+                    </strong>
+
+                    <p id="recommended-description">
+                        Model sonucu oluşturulduğunda önerilen aksiyon gösterilecektir.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="action-priority">
+
+                <span>
+                    Müdahale Önceliği
+                </span>
+
+                <strong id="action-priority">
+                    —
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-card scenario-card">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="card-label">SENARYO ANALİZİ</p>
+                    <h3>What-if Analysis</h3>
+                </div>
+
+                <span
+                    class="analysis-status"
+                    id="scenario-analysis-status"
+                >
+                    Hazır
+                </span>
+
+            </div>
+
+
+            <p class="scenario-description">
+                Teslimat gecikmesi ortadan kaldırıldığında model sonucunun nasıl
+                değişeceğini test edin.
+            </p>
+
+
+            <div class="scenario-stat">
+
+                <span>
+                    Mevcut gecikme
+                </span>
+
+                <strong id="scenario-current-delay">
+                    0 gün
+                </strong>
+
+            </div>
+
+
+            <div class="scenario-stat">
+
+                <span>
+                    Hedef gecikme
+                </span>
+
+                <strong>
+                    0 gün
+                </strong>
+
+            </div>
+
+
+            <div
+                class="scenario-result"
+                id="scenario-result"
+                hidden
+            >
+
+                <div class="scenario-result-heading">
+
+                    <div class="scenario-result-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <div>
+                        <span>ANALİZ SONUCU</span>
+
+                        <strong id="scenario-result-title">
+                            Senaryo sonucu hazır
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="scenario-comparison-grid">
+
+                    <div class="scenario-comparison-item">
+
+                        <span>
+                            Mevcut Memnuniyetsizlik
+                        </span>
+
+                        <strong id="scenario-current-risk">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="scenario-comparison-item">
+
+                        <span>
+                            Gecikmesiz Senaryo
+                        </span>
+
+                        <strong id="scenario-new-risk">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="scenario-improvement">
+
+                    <span>
+                        Risk Değişimi
+                    </span>
+
+                    <strong id="scenario-risk-change">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <p
+                    class="scenario-result-description"
+                    id="scenario-result-description"
+                ></p>
+
+            </div>
+
+
+            <button
+                class="scenario-button"
+                id="scenario-button"
+                type="button"
+            >
+                <i class="fa-solid fa-arrow-trend-down"></i>
+                Gecikmesiz Senaryoyu Test Et
+            </button>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+const form =
+    document.getElementById("prediction-form");
+
+const submitButton =
+    document.getElementById("prediction-submit");
+
+const resetButton =
+    document.getElementById("reset-form");
+
+const scenarioButton =
+    document.getElementById("scenario-button");
+
+let lastCustomerData = null;
+let lastPredictionResult = null;
+
+
+/* =========================================================
+   DEFAULT DATE
+========================================================= */
+
+function setDefaultPurchaseDate() {
+
+    const input =
+        document.getElementById(
+            "purchase_datetime"
+        );
+
+    if (!input || input.value) {
+        return;
+    }
+
+    const now =
+        new Date();
+
+    now.setMinutes(
+        now.getMinutes() -
+        now.getTimezoneOffset()
+    );
+
+    input.value =
+        now
+            .toISOString()
+            .slice(0, 16);
+}
+
+
+setDefaultPurchaseDate();
+
+
+/* =========================================================
+   FEATURE BUILDER
+========================================================= */
+
+function buildCustomerData() {
+
+    const totalPrice =
+        Number(
+            document.getElementById(
+                "total_price"
+            ).value
+        );
+
+    const totalFreight =
+        Number(
+            document.getElementById(
+                "total_freight"
+            ).value
+        );
+
+    const totalProducts =
+        Number(
+            document.getElementById(
+                "total_products"
+            ).value
+        );
+
+    const delay =
+        Number(
+            document.getElementById(
+                "delivery_delay_days"
+            ).value
+        );
+
+
+    const purchaseDateValue =
+        document.getElementById(
+            "purchase_datetime"
+        ).value;
+
+
+    if (!purchaseDateValue) {
+
+        throw new Error(
+            "Sipariş tarihi ve saati seçilmelidir."
+        );
+    }
+
+
+    const purchaseDate =
+        new Date(purchaseDateValue);
+
+
+    if (
+        Number.isNaN(
+            purchaseDate.getTime()
+        )
+    ) {
+
+        throw new Error(
+            "Sipariş tarihi geçerli değil."
+        );
+    }
+
+
+    /*
+     * JavaScript:
+     * Sunday = 0
+     * Monday = 1
+     *
+     * Pandas:
+     * Monday = 0
+     * Sunday = 6
+     */
+
+    const purchaseDayOfWeek =
+        (
+            purchaseDate.getDay() + 6
+        ) % 7;
+
+
+    const isWeekend =
+        purchaseDayOfWeek >= 5
+            ? 1
+            : 0;
+
+
+    return {
+
+        customer_state:
+            document.getElementById(
+                "customer_state"
+            ).value,
+
+
+        total_price:
+            totalPrice,
+
+
+        total_freight:
+            totalFreight,
+
+
+        total_products:
+            totalProducts,
+
+
+        average_product_price:
+            Number(
+                document.getElementById(
+                    "average_product_price"
+                ).value
+            ),
+
+
+        approval_time_days:
+            Number(
+                document.getElementById(
+                    "approval_time_days"
+                ).value
+            ),
+
+
+        delivery_time_days:
+            Number(
+                document.getElementById(
+                    "delivery_time_days"
+                ).value
+            ),
+
+
+        carrier_delivery_days:
+            Number(
+                document.getElementById(
+                    "carrier_delivery_days"
+                ).value
+            ),
+
+
+        delivery_delay_days:
+            delay,
+
+
+        total_payment:
+            totalPrice + totalFreight,
+
+
+        payment_installments:
+            Number(
+                document.getElementById(
+                    "payment_installments"
+                ).value
+            ),
+
+
+        payment_type:
+            document.getElementById(
+                "payment_type"
+            ).value,
+
+
+        unique_products:
+            totalProducts,
+
+
+        unique_categories:
+            Number(
+                document.getElementById(
+                    "unique_categories"
+                ).value
+            ),
+
+
+        primary_product_category:
+            document.getElementById(
+                "primary_product_category"
+            ).value,
+
+
+        average_product_weight:
+            Number(
+                document.getElementById(
+                    "average_product_weight"
+                ).value
+            ),
+
+
+        average_product_length:
+            Number(
+                document.getElementById(
+                    "average_product_length"
+                ).value
+            ),
+
+
+        average_product_height:
+            Number(
+                document.getElementById(
+                    "average_product_height"
+                ).value
+            ),
+
+
+        average_product_width:
+            Number(
+                document.getElementById(
+                    "average_product_width"
+                ).value
+            ),
+
+
+        average_product_photos:
+            Number(
+                document.getElementById(
+                    "average_product_photos"
+                ).value
+            ),
+
+
+        purchase_year:
+            purchaseDate.getFullYear(),
+
+
+        purchase_month:
+            purchaseDate.getMonth() + 1,
+
+
+        purchase_day:
+            purchaseDate.getDate(),
+
+
+        purchase_day_of_week:
+            purchaseDayOfWeek,
+
+
+        purchase_hour:
+            purchaseDate.getHours(),
+
+
+        is_weekend:
+            isWeekend,
+
+
+        absolute_delivery_difference_days:
+            Math.abs(delay)
+
+    };
+
+}
+
+
+/* =========================================================
+   API REQUEST
+========================================================= */
+
+async function requestPrediction(
+    customerData,
+    endpoint = "{{ url_for('predict') }}"
+) {
+
+    const response =
+        await fetch(
+            endpoint,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(
+                        customerData
+                    )
+            }
+        );
+
+
+    let result;
+
+    try {
+
+        result =
+            await response.json();
+
+    }
+
+    catch {
+
+        throw new Error(
+            "Sunucudan geçerli bir yanıt alınamadı."
+        );
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            result.error ||
+            "Tahmin oluşturulamadı."
+        );
+    }
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   RENDER RESULT
+========================================================= */
+
+function renderPrediction(
+    result,
+    customerData
+) {
+
+    const satisfied =
+        Number(
+            result.satisfied_probability
+        );
+
+    const unsatisfied =
+        Number(
+            result.unsatisfied_probability
+        );
+
+
+    if (
+        !Number.isFinite(satisfied) ||
+        !Number.isFinite(unsatisfied)
+    ) {
+
+        throw new Error(
+            "Model geçerli olasılık değerleri döndürmedi."
+        );
+    }
+
+
+    const satisfiedPct =
+        Math.round(
+            satisfied * 1000
+        ) / 10;
+
+
+    const unsatisfiedPct =
+        Math.round(
+            unsatisfied * 1000
+        ) / 10;
+
+
+    document.getElementById(
+        "prediction-empty"
+    ).hidden =
+        true;
+
+
+    document.getElementById(
+        "prediction-result"
+    ).hidden =
+        false;
+
+
+    document.getElementById(
+        "analysis-status"
+    ).textContent =
+        "Analiz tamamlandı";
+
+
+    document.getElementById(
+        "satisfaction-score"
+    ).textContent =
+        satisfiedPct.toFixed(1) +
+        "%";
+
+
+    document.getElementById(
+        "satisfied-probability"
+    ).textContent =
+        satisfiedPct.toFixed(1) +
+        "%";
+
+
+    document.getElementById(
+        "unsatisfied-probability"
+    ).textContent =
+        unsatisfiedPct.toFixed(1) +
+        "%";
+
+
+    document.getElementById(
+        "satisfied-bar"
+    ).style.width =
+        satisfiedPct + "%";
+
+
+    document.getElementById(
+        "unsatisfied-bar"
+    ).style.width =
+        unsatisfiedPct + "%";
+
+
+    document.getElementById(
+        "score-ring"
+    ).style.setProperty(
+        "--score",
+        satisfiedPct + "%"
+    );
+
+
+    document.getElementById(
+        "scenario-current-delay"
+    ).textContent =
+        customerData
+            .delivery_delay_days +
+        " gün";
+
+
+    updateRiskAssessment(
+        unsatisfied
+    );
+
+
+    updateOrderSignals(
+        customerData
+    );
+
+}
+
+
+/* =========================================================
+   NOTIFICATION INTEGRATION
+========================================================= */
+
+function createPredictionNotification(
+    result,
+    customerData
+) {
+
+    const notificationCenter =
+        window.CustomerIntelligenceNotifications;
+
+
+    if (
+        !notificationCenter ||
+        typeof notificationCenter.add !==
+        "function"
+    ) {
+
+        return;
+    }
+
+
+    const satisfied =
+        Number(
+            result.satisfied_probability
+        );
+
+
+    const unsatisfied =
+        Number(
+            result.unsatisfied_probability
+        );
+
+
+    if (
+        !Number.isFinite(satisfied) ||
+        !Number.isFinite(unsatisfied)
+    ) {
+
+        return;
+    }
+
+
+    const satisfiedPct =
+        (
+            satisfied * 100
+        ).toFixed(1);
+
+
+    const unsatisfiedPct =
+        (
+            unsatisfied * 100
+        ).toFixed(1);
+
+
+    const state =
+        customerData.customer_state ||
+        "—";
+
+
+    if (
+        unsatisfied >= 0.60
+    ) {
+
+        notificationCenter.add({
+
+            type:
+                "risk",
+
+            level:
+                "danger",
+
+            title:
+                "Yüksek Riskli Tahmin Oluşturuldu",
+
+            message:
+                `Müşteri eyaleti ${state}. Memnuniyetsizlik olasılığı %${unsatisfiedPct}, memnuniyet olasılığı %${satisfiedPct}. Öncelikli inceleme önerilir.`,
+
+            url:
+                "/history"
+        });
+
+
+        return;
+    }
+
+
+    if (
+        unsatisfied >= 0.40
+    ) {
+
+        notificationCenter.add({
+
+            type:
+                "risk",
+
+            level:
+                "warning",
+
+            title:
+                "Orta Riskli Tahmin Oluşturuldu",
+
+            message:
+                `Müşteri eyaleti ${state}. Memnuniyetsizlik olasılığı %${unsatisfiedPct}. Siparişin yakından izlenmesi önerilir.`,
+
+            url:
+                "/history"
+        });
+
+
+        return;
+    }
+
+
+    notificationCenter.add({
+
+        type:
+            "system",
+
+        level:
+            "success",
+
+        title:
+            "Tahmin Başarıyla Oluşturuldu",
+
+        message:
+            `Müşteri eyaleti ${state}. Memnuniyet olasılığı %${satisfiedPct}, memnuniyetsizlik olasılığı %${unsatisfiedPct}.`,
+
+        url:
+            "/history"
+    });
+
+}
+
+
+
+/* =========================================================
+   SCENARIO NOTIFICATION INTEGRATION
+========================================================= */
+
+function createScenarioNotification(
+    currentUnsatisfied,
+    scenarioUnsatisfied,
+    customerData
+) {
+
+    const notificationCenter =
+        window.CustomerIntelligenceNotifications;
+
+
+    if (
+        !notificationCenter ||
+        typeof notificationCenter.add !==
+        "function"
+    ) {
+
+        return;
+    }
+
+
+    const currentPct =
+        currentUnsatisfied *
+        100;
+
+
+    const scenarioPct =
+        scenarioUnsatisfied *
+        100;
+
+
+    const change =
+        currentPct -
+        scenarioPct;
+
+
+    const delay =
+        Number(
+            customerData
+                ?.delivery_delay_days ??
+            0
+        );
+
+
+    if (
+        change >
+        0.05
+    ) {
+
+        notificationCenter.add({
+
+            type:
+                "scenario",
+
+            level:
+                "success",
+
+            title:
+                "Senaryo Analizi: Risk Azaldı",
+
+            message:
+                `Teslimat gecikmesi ${delay} günden 0 güne indirildiğinde ` +
+                `memnuniyetsizlik riski %${currentPct.toFixed(1)} seviyesinden ` +
+                `%${scenarioPct.toFixed(1)} seviyesine düştü. ` +
+                `Risk ${change.toFixed(1)} puan azaldı.`,
+
+            url:
+                "/prediction",
+
+            dedupeKey:
+                `scenario-improved-${delay}-${currentPct.toFixed(1)}-${scenarioPct.toFixed(1)}`
+        });
+
+
+        return;
+    }
+
+
+    if (
+        change <
+        -0.05
+    ) {
+
+        notificationCenter.add({
+
+            type:
+                "scenario",
+
+            level:
+                "warning",
+
+            title:
+                "Senaryo Analizi: Risk Arttı",
+
+            message:
+                `Gecikmesiz senaryoda memnuniyetsizlik riski ` +
+                `%${currentPct.toFixed(1)} seviyesinden ` +
+                `%${scenarioPct.toFixed(1)} seviyesine yükseldi. ` +
+                `Risk ${Math.abs(change).toFixed(1)} puan arttı.`,
+
+            url:
+                "/prediction",
+
+            dedupeKey:
+                `scenario-worsened-${delay}-${currentPct.toFixed(1)}-${scenarioPct.toFixed(1)}`
+        });
+
+
+        return;
+    }
+
+
+    notificationCenter.add({
+
+        type:
+            "scenario",
+
+        level:
+            "info",
+
+        title:
+            "Senaryo Analizi Tamamlandı",
+
+        message:
+            `Teslimat gecikmesinin 0 güne indirilmesi model riskinde ` +
+            `anlamlı bir değişiklik oluşturmadı. ` +
+            `Tahmini memnuniyetsizlik %${scenarioPct.toFixed(1)} seviyesinde.`,
+
+        url:
+            "/prediction",
+
+        dedupeKey:
+            `scenario-neutral-${delay}-${scenarioPct.toFixed(1)}`
+    });
+}
+
+
+/* =========================================================
+   RISK ASSESSMENT
+========================================================= */
+
+function updateRiskAssessment(
+    unsatisfied
+) {
+
+    const verdict =
+        document.getElementById(
+            "prediction-verdict"
+        );
+
+    const summary =
+        document.getElementById(
+            "prediction-summary"
+        );
+
+    const riskLevel =
+        document.getElementById(
+            "risk-level"
+        );
+
+    const riskDescription =
+        document.getElementById(
+            "risk-description"
+        );
+
+    const action =
+        document.getElementById(
+            "recommended-action"
+        );
+
+    const actionDescription =
+        document.getElementById(
+            "recommended-description"
+        );
+
+    const priority =
+        document.getElementById(
+            "action-priority"
+        );
+
+    const pointer =
+        document.getElementById(
+            "risk-meter-pointer"
+        );
+
+
+    pointer.style.left =
+        Math.min(
+            96,
+            Math.max(
+                4,
+                unsatisfied * 100
+            )
+        ) + "%";
+
+
+    if (unsatisfied >= 0.60) {
+
+        verdict.textContent =
+            "Memnuniyetsizlik Riski Yüksek";
+
+        verdict.className =
+            "prediction-verdict danger";
+
+
+        summary.textContent =
+            "Bu sipariş profili müşteri memnuniyetsizliği açısından öncelikli olarak değerlendirilmelidir.";
+
+
+        riskLevel.textContent =
+            "Yüksek Risk";
+
+
+        riskDescription.textContent =
+            "Memnuniyetsizlik olasılığı belirgin şekilde yüksek.";
+
+
+        action.textContent =
+            "Öncelikli müşteri müdahalesi";
+
+
+        actionDescription.textContent =
+            "Sipariş ve teslimat süreci incelenmeli; müşteriyle erken iletişim kurulmalıdır.";
+
+
+        priority.textContent =
+            "YÜKSEK";
+
+        priority.className =
+            "priority-high";
+
+    }
+
+    else if (unsatisfied >= 0.40) {
+
+        verdict.textContent =
+            "Yakından İzlenmeli";
+
+        verdict.className =
+            "prediction-verdict warning";
+
+
+        summary.textContent =
+            "Sonuç kritik seviyede değil ancak müşteri deneyimini etkileyen sinyaller izlenmelidir.";
+
+
+        riskLevel.textContent =
+            "Orta Risk";
+
+
+        riskDescription.textContent =
+            "Müşteri deneyimi için bazı risk faktörleri mevcut.";
+
+
+        action.textContent =
+            "Siparişi izlemeye alın";
+
+
+        actionDescription.textContent =
+            "Teslimat ve kargo koşulları takip edilerek olası sorunlara erken müdahale edilmelidir.";
+
+
+        priority.textContent =
+            "ORTA";
+
+        priority.className =
+            "priority-medium";
+
+    }
+
+    else {
+
+        verdict.textContent =
+            "Memnuniyet Beklentisi Yüksek";
+
+        verdict.className =
+            "prediction-verdict success";
+
+
+        summary.textContent =
+            "Mevcut sipariş koşullarına göre müşterinin memnun kalma olasılığı yüksektir.";
+
+
+        riskLevel.textContent =
+            "Düşük Risk";
+
+
+        riskDescription.textContent =
+            "Özel müdahale gerektiren güçlü bir risk sinyali bulunmuyor.";
+
+
+        action.textContent =
+            "Standart süreç devam edebilir";
+
+
+        actionDescription.textContent =
+            "Sipariş normal müşteri operasyonu içinde takip edilebilir.";
+
+
+        priority.textContent =
+            "DÜŞÜK";
+
+        priority.className =
+            "priority-low";
+
+    }
+
+}
+
+
+/* =========================================================
+   SIGNALS
+========================================================= */
+
+function updateOrderSignals(
+    customerData
+) {
+
+    const delivery =
+        document.getElementById(
+            "delivery-signal"
+        );
+
+    const freight =
+        document.getElementById(
+            "freight-signal"
+        );
+
+    const payment =
+        document.getElementById(
+            "payment-signal"
+        );
+
+
+    if (
+        customerData
+            .delivery_delay_days > 3
+    ) {
+
+        delivery.textContent =
+            "Belirgin teslimat gecikmesi";
+
+    }
+
+    else if (
+        customerData
+            .delivery_delay_days > 0
+    ) {
+
+        delivery.textContent =
+            "Hafif teslimat gecikmesi";
+
+    }
+
+    else {
+
+        delivery.textContent =
+            "Zamanında veya erken teslimat";
+
+    }
+
+
+    const freightRatio =
+        customerData.total_price > 0
+
+            ? customerData.total_freight /
+              customerData.total_price
+
+            : 0;
+
+
+    if (freightRatio > 0.25) {
+
+        freight.textContent =
+            "Sipariş değerine göre yüksek";
+
+    }
+
+    else {
+
+        freight.textContent =
+            "Normal aralıkta";
+
+    }
+
+
+    if (
+        customerData
+            .payment_installments > 6
+    ) {
+
+        payment.textContent =
+            "Yüksek taksit kullanımı";
+
+    }
+
+    else {
+
+        payment.textContent =
+            "Standart ödeme yapısı";
+
+    }
+
+}
+
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+form.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+
+        let customerData;
+
+
+        try {
+
+            customerData =
+                buildCustomerData();
+
+        }
+
+        catch (error) {
+
+            showToast(
+                error.message
+            );
+
+            return;
+        }
+
+
+        lastCustomerData =
+            customerData;
+
+
+        submitButton.disabled =
+            true;
+
+
+        submitButton.classList.add(
+            "loading"
+        );
+
+
+        submitButton
+            .querySelector("span")
+            .innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Analiz ediliyor';
+
+
+        document.getElementById(
+            "analysis-status"
+        ).textContent =
+            "Analiz ediliyor";
+
+
+        try {
+
+            const result =
+                await requestPrediction(
+                    customerData
+                );
+
+
+            renderPrediction(
+                result,
+                customerData
+            );
+
+
+            lastPredictionResult =
+                result;
+
+
+            createPredictionNotification(
+                result,
+                customerData
+            );
+
+
+            showToast(
+                "Tahmin başarıyla oluşturuldu."
+            );
+
+        }
+
+        catch (error) {
+
+            document.getElementById(
+                "analysis-status"
+            ).textContent =
+                "Hata";
+
+
+            showToast(
+                "Tahmin oluşturulamadı: " +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            submitButton.disabled =
+                false;
+
+
+            submitButton.classList.remove(
+                "loading"
+            );
+
+
+            submitButton
+                .querySelector("span")
+                .innerHTML =
+                '<i class="fa-solid fa-wand-magic-sparkles"></i> Tahmini Hesapla';
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+resetButton.addEventListener(
+    "click",
+    function () {
+
+        form.reset();
+
+        setDefaultPurchaseDate();
+
+
+        document.getElementById(
+            "prediction-result"
+        ).hidden =
+            true;
+
+
+        document.getElementById(
+            "prediction-empty"
+        ).hidden =
+            false;
+
+
+        document.getElementById(
+            "analysis-status"
+        ).textContent =
+            "Bekleniyor";
+
+
+        document.getElementById(
+            "risk-level"
+        ).textContent =
+            "Bekleniyor";
+
+
+        document.getElementById(
+            "risk-description"
+        ).textContent =
+            "Risk seviyesi tahmin sonrasında otomatik olarak hesaplanacaktır.";
+
+
+        document.getElementById(
+            "recommended-action"
+        ).textContent =
+            "Tahmin bekleniyor";
+
+
+        document.getElementById(
+            "recommended-description"
+        ).textContent =
+            "Model sonucu oluşturulduğunda önerilen aksiyon gösterilecektir.";
+
+
+        document.getElementById(
+            "action-priority"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "delivery-signal"
+        ).textContent =
+            "Tahmin bekleniyor";
+
+
+        document.getElementById(
+            "freight-signal"
+        ).textContent =
+            "Tahmin bekleniyor";
+
+
+        document.getElementById(
+            "payment-signal"
+        ).textContent =
+            "Tahmin bekleniyor";
+
+
+        lastCustomerData =
+            null;
+
+
+        lastPredictionResult =
+            null;
+
+
+        const scenarioResultPanel =
+            document.getElementById(
+                "scenario-result"
+            );
+
+
+        const scenarioStatus =
+            document.getElementById(
+                "scenario-analysis-status"
+            );
+
+
+        if (scenarioResultPanel) {
+
+            scenarioResultPanel.hidden =
+                true;
+        }
+
+
+        if (scenarioStatus) {
+
+            scenarioStatus.textContent =
+                "Hazır";
+        }
+
+
+        showToast(
+            "Tahmin formu temizlendi."
+        );
+
+    }
+);
+
+
+/* =========================================================
+   WHAT-IF ANALYSIS
+========================================================= */
+
+scenarioButton.addEventListener(
+    "click",
+    async function () {
+
+        if (
+            !lastCustomerData ||
+            !lastPredictionResult
+        ) {
+
+            showToast(
+                "Önce normal bir tahmin oluşturun."
+            );
+
+            return;
+        }
+
+
+        const scenarioData = {
+
+            ...lastCustomerData,
+
+            delivery_delay_days:
+                0,
+
+            absolute_delivery_difference_days:
+                0
+
+        };
+
+
+        const scenarioResultPanel =
+            document.getElementById(
+                "scenario-result"
+            );
+
+
+        const scenarioStatus =
+            document.getElementById(
+                "scenario-analysis-status"
+            );
+
+
+        scenarioButton.disabled =
+            true;
+
+
+        if (scenarioStatus) {
+
+            scenarioStatus.textContent =
+                "Analiz ediliyor";
+        }
+
+
+        scenarioButton.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Senaryo hesaplanıyor';
+
+
+        try {
+
+            const scenarioResult =
+                await requestPrediction(
+                    scenarioData,
+                    "/api/scenario-prediction"
+                );
+
+
+            const currentUnsatisfied =
+                Number(
+                    lastPredictionResult
+                        .unsatisfied_probability
+                );
+
+
+            const scenarioUnsatisfied =
+                Number(
+                    scenarioResult
+                        .unsatisfied_probability
+                );
+
+
+            if (
+                !Number.isFinite(
+                    currentUnsatisfied
+                ) ||
+                !Number.isFinite(
+                    scenarioUnsatisfied
+                )
+            ) {
+
+                throw new Error(
+                    "Senaryo olasılık değerleri geçerli değil."
+                );
+            }
+
+
+            const currentPct =
+                currentUnsatisfied *
+                100;
+
+
+            const scenarioPct =
+                scenarioUnsatisfied *
+                100;
+
+
+            const change =
+                currentPct -
+                scenarioPct;
+
+
+            const currentRiskElement =
+                document.getElementById(
+                    "scenario-current-risk"
+                );
+
+
+            const newRiskElement =
+                document.getElementById(
+                    "scenario-new-risk"
+                );
+
+
+            const changeElement =
+                document.getElementById(
+                    "scenario-risk-change"
+                );
+
+
+            const titleElement =
+                document.getElementById(
+                    "scenario-result-title"
+                );
+
+
+            const descriptionElement =
+                document.getElementById(
+                    "scenario-result-description"
+                );
+
+
+            currentRiskElement.textContent =
+                "%" +
+                currentPct.toFixed(1);
+
+
+            newRiskElement.textContent =
+                "%" +
+                scenarioPct.toFixed(1);
+
+
+            if (change > 0.05) {
+
+                changeElement.textContent =
+                    "-" +
+                    change.toFixed(1) +
+                    " puan";
+
+
+                changeElement.className =
+                    "scenario-change-positive";
+
+
+                titleElement.textContent =
+                    "Gecikmenin kaldırılması riski azaltıyor";
+
+
+                descriptionElement.textContent =
+                    `Teslimat gecikmesi ${lastCustomerData.delivery_delay_days} günden 0 güne indirildiğinde tahmini memnuniyetsizlik %${currentPct.toFixed(1)} seviyesinden %${scenarioPct.toFixed(1)} seviyesine düşüyor.`;
+
+            }
+
+            else if (change < -0.05) {
+
+                changeElement.textContent =
+                    "+" +
+                    Math.abs(
+                        change
+                    ).toFixed(1) +
+                    " puan";
+
+
+                changeElement.className =
+                    "scenario-change-negative";
+
+
+                titleElement.textContent =
+                    "Senaryo riski artırıyor";
+
+
+                descriptionElement.textContent =
+                    `Bu senaryoda tahmini memnuniyetsizlik %${currentPct.toFixed(1)} seviyesinden %${scenarioPct.toFixed(1)} seviyesine yükseliyor. Sonuç diğer model özellikleriyle birlikte değerlendirilmelidir.`;
+
+            }
+
+            else {
+
+                changeElement.textContent =
+                    "Değişim yok";
+
+
+                changeElement.className =
+                    "scenario-change-neutral";
+
+
+                titleElement.textContent =
+                    "Gecikmenin etkisi sınırlı";
+
+
+                descriptionElement.textContent =
+                    `Teslimat gecikmesi 0 güne indirildiğinde tahmini memnuniyetsizlik yaklaşık %${scenarioPct.toFixed(1)} seviyesinde kalıyor.`;
+            }
+
+
+            scenarioResultPanel.hidden =
+                false;
+
+
+            if (scenarioStatus) {
+
+                scenarioStatus.textContent =
+                    "Tamamlandı";
+            }
+
+
+            createScenarioNotification(
+                currentUnsatisfied,
+                scenarioUnsatisfied,
+                lastCustomerData
+            );
+
+        }
+
+        catch (error) {
+
+            if (scenarioStatus) {
+
+                scenarioStatus.textContent =
+                    "Hata";
+            }
+
+
+            showToast(
+                "Senaryo analizi çalıştırılamadı: " +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            scenarioButton.disabled =
+                false;
+
+
+            scenarioButton.innerHTML =
+                '<i class="fa-solid fa-arrow-trend-down"></i> Gecikmesiz Senaryoyu Test Et';
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

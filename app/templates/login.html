@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Customer Intelligence Platform giriş ekranı"
+    >
+
+    <title>
+        Giriş Yap | Customer Intelligence Platform
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/auth.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="auth-page">
+
+        <section
+            class="auth-container"
+            aria-label="Giriş ekranı"
+        >
+
+
+            <!-- =================================================
+                 PLATFORM INTRODUCTION
+            ================================================== -->
+
+            <aside class="auth-intro">
+
+                <div class="brand">
+
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+
+                    <div class="brand-text">
+
+                        <strong>
+                            Customer Intelligence
+                        </strong>
+
+                        <span>
+                            Platform
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="intro-content">
+
+                    <div class="intro-badge">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        Güvenli Yönetim Paneli
+
+                    </div>
+
+
+                    <h1>
+                        Müşteri deneyimini veriye dönüştürün.
+                    </h1>
+
+
+                    <p>
+                        Tahminleri, müşteri risklerini, gelişmiş analizleri
+                        ve yapay zeka destekli içgörüleri tek bir profesyonel
+                        platform üzerinden yönetin.
+                    </p>
+
+                </div>
+
+
+                <div class="platform-features">
+
+                    <span class="feature-chip">
+
+                        <i class="fa-solid fa-chart-pie"></i>
+
+                        Gerçek Zamanlı Analiz
+
+                    </span>
+
+
+                    <span class="feature-chip">
+
+                        <i class="fa-solid fa-brain"></i>
+
+                        AI Destekli
+
+                    </span>
+
+
+                    <span class="feature-chip">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Güvenli Oturum
+
+                    </span>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================== -->
+
+            <section class="auth-form-section">
+
+                <div class="auth-form-wrapper">
+
+
+                    <!-- MOBILE BRAND -->
+
+                    <div class="mobile-brand">
+
+                        <div class="brand-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+
+                        <div class="brand-text">
+
+                            <strong>
+                                Customer Intelligence
+                            </strong>
+
+                            <span>
+                                Platform
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HEADING -->
+
+                    <div class="form-heading">
+
+                        <h2>
+                            Tekrar hoş geldiniz
+                        </h2>
+
+                        <p>
+                            Customer Intelligence Platform'a erişmek
+                            için hesabınızla giriş yapın.
+                        </p>
+
+                    </div>
+
+
+                    <!-- FLASH MESSAGES -->
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+
+                        {% if messages %}
+
+                            <div class="flash-list">
+
+                                {% for category, message in messages %}
+
+                                    <div
+                                        class="flash-message {{ category }}"
+                                        role="alert"
+                                    >
+
+                                        <i
+                                            class="fa-solid
+                                            {% if category == 'success' %}
+                                                fa-circle-check
+                                            {% elif category == 'warning' %}
+                                                fa-triangle-exclamation
+                                            {% else %}
+                                                fa-circle-exclamation
+                                            {% endif %}"
+                                        ></i>
+
+                                        <span>
+                                            {{ message }}
+                                        </span>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endwith %}
+
+
+                    <!-- LOGIN FORM -->
+
+                    <form
+                        class="auth-form"
+                        method="POST"
+                        action="{{ url_for('login', next=request.args.get('next', '')) }}"
+                        autocomplete="on"
+                        novalidate
+                    >
+
+
+                        <!-- EMAIL -->
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="loginEmail"
+                            >
+                                E-posta Adresi
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <i
+                                    class="fa-regular fa-envelope input-icon"
+                                ></i>
+
+
+                                <input
+                                    class="form-input"
+                                    id="loginEmail"
+                                    name="email"
+                                    type="email"
+                                    value="{{ email|default('') }}"
+                                    placeholder="ornek@sirket.com"
+                                    autocomplete="email"
+                                    maxlength="190"
+                                    required
+                                    autofocus
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="loginPassword"
+                            >
+                                Parola
+                            </label>
+
+
+                            <div class="input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-lock input-icon"
+                                ></i>
+
+
+                                <input
+                                    class="form-input"
+                                    id="loginPassword"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Parolanızı girin"
+                                    autocomplete="current-password"
+                                    required
+                                >
+
+
+                                <button
+                                    class="password-toggle"
+                                    id="passwordToggle"
+                                    type="button"
+                                    aria-label="Parolayı göster"
+                                    aria-pressed="false"
+                                >
+
+                                    <i class="fa-regular fa-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- OPTIONS -->
+
+                        <div class="form-options">
+
+                            <label class="remember-option">
+
+                                <input
+                                    type="checkbox"
+                                    name="remember"
+                                    value="1"
+                                >
+
+                                <span>
+                                    Beni hatırla
+                                </span>
+
+                            </label>
+
+
+                            <a
+                                class="forgot-password"
+                                href="#"
+                                id="forgotPasswordLink"
+                            >
+                                Parolamı unuttum
+                            </a>
+
+                        </div>
+
+
+                        <!-- SUBMIT -->
+
+                        <button
+                            class="submit-button"
+                            id="loginSubmitButton"
+                            type="submit"
+                        >
+
+                            <span>
+                                Giriş Yap
+                            </span>
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- REGISTER -->
+
+                    <div class="register-section">
+
+                        <p>
+
+                            Henüz hesabınız yok mu?
+
+                            <a href="{{ url_for('register') }}">
+                                Hesap oluştur
+                            </a>
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- SECURITY -->
+
+                    <div class="security-note">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <span>
+                            Oturum bilgileriniz güvenli şekilde işlenir.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <script
+        src="{{ url_for('static', filename='js/auth.js') }}"
+        defer
+    ></script>
+
+</body>
+
+</html>

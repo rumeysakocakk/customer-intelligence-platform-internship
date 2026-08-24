@@ -1,0 +1,1101 @@
+{% extends "base.html" %}
+
+{% block title %}
+Raporlar | Customer Intelligence
+{% endblock %}
+
+{% block breadcrumb %}
+Raporlar
+{% endblock %}
+
+{% block content %}
+
+<div class="reports-page" id="report-content">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <div>
+            <p class="live-label">
+                <span class="live-dot"></span>
+                CUSTOMER INTELLIGENCE REPORTS
+            </p>
+
+            <h1>Raporlar</h1>
+
+            <p class="page-subtitle">
+                Gerçek model tahminlerinden oluşturulan yönetici özetini,
+                risk dağılımını ve son tahmin kayıtlarını inceleyin.
+            </p>
+        </div>
+
+        <div class="page-actions">
+
+            <!-- PRINT -->
+
+            <button
+                class="secondary-button"
+                id="print-report-button"
+                type="button"
+                title="Raporu yazdır"
+            >
+                <i class="fa-solid fa-print"></i>
+                <span>Yazdır</span>
+            </button>
+
+
+            <!-- PDF DOWNLOAD -->
+
+            <button
+                class="secondary-button pdf-download-button"
+                id="download-pdf-button"
+                type="button"
+                title="Raporu PDF olarak indir"
+            >
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>PDF İndir</span>
+            </button>
+
+
+            <!-- NEW PREDICTION -->
+
+            <a
+                class="primary-button"
+                href="{{ url_for('prediction_page') }}"
+            >
+                <i class="fa-solid fa-plus"></i>
+                <span>Yeni Tahmin</span>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         EXECUTIVE SUMMARY
+    ====================================================== -->
+
+    <section class="report-summary-card">
+
+        <div class="report-summary-main">
+
+            <div class="report-summary-icon">
+                <i class="fa-regular fa-file-lines"></i>
+            </div>
+
+            <div>
+
+                <span class="report-eyebrow">
+                    YÖNETİCİ ÖZETİ
+                </span>
+
+                <h2>
+                    Müşteri Memnuniyeti Tahmin Raporu
+                </h2>
+
+                <p>
+                    Bu rapor MySQL veritabanında kayıtlı gerçek
+                    model tahminlerinden otomatik olarak oluşturulmaktadır.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-meta">
+
+            <div>
+
+                <span>
+                    Toplam kayıt
+                </span>
+
+                <strong>
+                    {{ metrics.total_predictions }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Ortalama memnuniyet
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(metrics.average_satisfaction) }}%
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         KPI CARDS
+    ====================================================== -->
+
+    <div class="metric-grid reports-metric-grid">
+
+
+        <!-- TOTAL PREDICTIONS -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon aqua">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+
+                <span class="metric-change neutral">
+                    MySQL
+                </span>
+
+            </div>
+
+            <p class="metric-label">
+                TOPLAM TAHMİN
+            </p>
+
+            <h2>
+                {{ metrics.total_predictions }}
+            </h2>
+
+            <p class="metric-note">
+                Sistemde kayıtlı toplam model tahmini
+            </p>
+
+        </div>
+
+
+        <!-- SATISFACTION -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon green">
+                    <i class="fa-solid fa-face-smile"></i>
+                </div>
+
+                <span class="metric-change positive">
+                    Ortalama
+                </span>
+
+            </div>
+
+            <p class="metric-label">
+                MEMNUNİYET
+            </p>
+
+            <h2>
+                {{ "%.1f"|format(metrics.average_satisfaction) }}%
+            </h2>
+
+            <p class="metric-note">
+                Tahminlerin ortalama memnuniyet olasılığı
+            </p>
+
+        </div>
+
+
+        <!-- HIGH RISK -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon coral">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <span class="metric-change negative">
+                    {{ "%.1f"|format(metrics.high_risk_percentage) }}%
+                </span>
+
+            </div>
+
+            <p class="metric-label">
+                YÜKSEK RİSK
+            </p>
+
+            <h2>
+                {{ metrics.high_risk_predictions }}
+            </h2>
+
+            <p class="metric-note">
+                Öncelikli incelenmesi gereken tahminler
+            </p>
+
+        </div>
+
+
+        <!-- DELIVERY DELAY -->
+
+        <div class="metric-card">
+
+            <div class="metric-top">
+
+                <div class="metric-icon yellow">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+
+                <span class="metric-change neutral">
+                    Gün
+                </span>
+
+            </div>
+
+            <p class="metric-label">
+                ORTALAMA GECİKME
+            </p>
+
+            <h2>
+                {{ "%.1f"|format(metrics.average_delivery_delay) }}
+            </h2>
+
+            <p class="metric-note">
+                Tahmin kayıtlarındaki ortalama teslimat gecikmesi
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ANALYSIS GRID
+    ====================================================== -->
+
+    <div class="reports-grid">
+
+
+        <!-- =================================================
+             RISK DISTRIBUTION
+        ================================================== -->
+
+        <section class="dashboard-card report-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        RİSK DAĞILIMI
+                    </p>
+
+                    <h3>
+                        Risk Özeti
+                    </h3>
+
+                </div>
+
+                <span class="card-chip">
+                    {{ risk_distribution.total }} Tahmin
+                </span>
+
+            </div>
+
+
+            {% if risk_distribution.total > 0 %}
+
+            <div class="report-risk-list">
+
+
+                <!-- LOW RISK -->
+
+                <div class="report-risk-row">
+
+                    <div>
+                        <span class="analytics-risk-dot low"></span>
+
+                        <strong>
+                            Düşük Risk
+                        </strong>
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            {{ risk_distribution.counts.low }} kayıt
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(risk_distribution.percentages.low) }}%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress low"
+                    value="{{ risk_distribution.percentages.low }}"
+                    max="100"
+                ></progress>
+
+
+                <!-- MEDIUM RISK -->
+
+                <div class="report-risk-row">
+
+                    <div>
+                        <span class="analytics-risk-dot medium"></span>
+
+                        <strong>
+                            Orta Risk
+                        </strong>
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            {{ risk_distribution.counts.medium }} kayıt
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(risk_distribution.percentages.medium) }}%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress medium"
+                    value="{{ risk_distribution.percentages.medium }}"
+                    max="100"
+                ></progress>
+
+
+                <!-- HIGH RISK -->
+
+                <div class="report-risk-row">
+
+                    <div>
+                        <span class="analytics-risk-dot high"></span>
+
+                        <strong>
+                            Yüksek Risk
+                        </strong>
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            {{ risk_distribution.counts.high }} kayıt
+                        </span>
+
+                        <strong>
+                            {{ "%.1f"|format(risk_distribution.percentages.high) }}%
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <progress
+                    class="analytics-progress high"
+                    value="{{ risk_distribution.percentages.high }}"
+                    max="100"
+                ></progress>
+
+            </div>
+
+
+            {% else %}
+
+            <div class="empty-dashboard-state">
+
+                <i class="fa-solid fa-chart-pie"></i>
+
+                <strong>
+                    Risk verisi bulunmuyor
+                </strong>
+
+                <p>
+                    İlk tahmin oluşturulduğunda risk özeti
+                    burada gösterilecektir.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- =================================================
+             CATEGORY PERFORMANCE
+        ================================================== -->
+
+        <section class="dashboard-card report-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <p class="card-label">
+                        KATEGORİ ÖZETİ
+                    </p>
+
+                    <h3>
+                        Kategori Performansı
+                    </h3>
+
+                </div>
+
+                <span class="card-chip">
+                    {{ category_statistics|length }} Kategori
+                </span>
+
+            </div>
+
+
+            {% if category_statistics %}
+
+            <div class="report-category-list">
+
+                {% for item in category_statistics[:5] %}
+
+                <div class="report-category-row">
+
+                    <div>
+
+                        <strong>
+                            {{
+                                item.category
+                                | replace("_", " ")
+                                | title
+                            }}
+                        </strong>
+
+                        <span>
+                            {{ item.prediction_count }} tahmin
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ "%.1f"|format(item.average_satisfaction) }}%
+                        </strong>
+
+                        <small>
+                            memnuniyet
+                        </small>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            {% else %}
+
+            <div class="empty-dashboard-state">
+
+                <i class="fa-solid fa-tags"></i>
+
+                <strong>
+                    Kategori verisi bulunmuyor
+                </strong>
+
+                <p>
+                    Kategori içeren tahminler oluşturulduğunda
+                    performans bilgileri burada gösterilecektir.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+
+    <!-- =====================================================
+         RECENT PREDICTIONS
+    ====================================================== -->
+
+    <section class="dashboard-card report-table-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <p class="card-label">
+                    SON KAYITLAR
+                </p>
+
+                <h3>
+                    Son Tahminler
+                </h3>
+
+            </div>
+
+
+            <a
+                class="card-link"
+                href="{{ url_for('history') }}"
+            >
+                Tüm Geçmiş
+
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+
+        {% if recent_predictions %}
+
+        <div class="table-wrapper">
+
+            <table class="prediction-table report-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Tahmin ID</th>
+                        <th>Tarih</th>
+                        <th>Eyalet</th>
+                        <th>Kategori</th>
+                        <th>Sonuç</th>
+                        <th>Risk</th>
+                        <th>Memnuniyet</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in recent_predictions %}
+
+                    <tr>
+
+
+                        <!-- ID -->
+
+                        <td class="mono-cell">
+                            {{ item.prediction_id }}
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            {% if item.created_at %}
+
+                                {{ item.created_at.strftime("%d.%m.%Y %H:%M") }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATE -->
+
+                        <td>
+                            {{ item.customer_state or "—" }}
+                        </td>
+
+
+                        <!-- CATEGORY -->
+
+                        <td>
+
+                            {% if item.primary_product_category %}
+
+                                {{
+                                    item.primary_product_category
+                                    | replace("_", " ")
+                                    | title
+                                }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PREDICTION -->
+
+                        <td>
+
+                            {% if item.prediction == 1 %}
+
+                                <span class="status-badge success">
+                                    Memnun
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge danger">
+                                    Memnun Değil
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- RISK -->
+
+                        <td>
+
+                            {% if item.risk_level == "low" %}
+
+                                <span class="risk-badge low">
+                                    Düşük
+                                </span>
+
+                            {% elif item.risk_level == "medium" %}
+
+                                <span class="risk-badge medium">
+                                    Orta
+                                </span>
+
+                            {% elif item.risk_level == "high" %}
+
+                                <span class="risk-badge high">
+                                    Yüksek
+                                </span>
+
+                            {% else %}
+
+                                <span class="risk-badge">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- SATISFACTION -->
+
+                        <td class="probability-cell">
+
+                            {% if item.satisfied_probability is not none %}
+
+                                {{ "%.1f"|format(item.satisfied_probability) }}%
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-dashboard-state">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            <strong>
+                Henüz tahmin kaydı bulunmuyor
+            </strong>
+
+            <p>
+                Yeni tahminler oluşturulduğunda
+                rapor tablosu burada dolacaktır.
+            </p>
+
+            <a
+                class="primary-button"
+                href="{{ url_for('prediction_page') }}"
+            >
+                <i class="fa-solid fa-plus"></i>
+                İlk Tahmini Oluştur
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =====================================================
+         REPORT INFORMATION
+    ====================================================== -->
+
+    <section class="report-note">
+
+        <i class="fa-solid fa-circle-info"></i>
+
+        <div>
+
+            <strong>
+                Rapor hakkında
+            </strong>
+
+            <p>
+                Bu rapor uygulamada oluşturulan canlı tahmin kayıtlarını
+                özetler. Modelin eğitim ve test başarılarını incelemek için
+                Model Performansı sayfasını kullanabilirsiniz.
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<!-- =========================================================
+     HTML2PDF
+========================================================= -->
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+></script>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const printReportButton =
+            document.getElementById(
+                "print-report-button"
+            );
+
+        const downloadPdfButton =
+            document.getElementById(
+                "download-pdf-button"
+            );
+
+        const reportElement =
+            document.getElementById(
+                "report-content"
+            );
+
+
+        /* =====================================================
+           PRINT
+        ===================================================== */
+
+        if (printReportButton) {
+
+            printReportButton.addEventListener(
+                "click",
+                function () {
+
+                    window.print();
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           PDF FILE NAME
+        ===================================================== */
+
+        function createPdfFileName() {
+
+            const now =
+                new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                String(
+                    now.getMonth() + 1
+                ).padStart(2, "0");
+
+            const day =
+                String(
+                    now.getDate()
+                ).padStart(2, "0");
+
+            const hour =
+                String(
+                    now.getHours()
+                ).padStart(2, "0");
+
+            const minute =
+                String(
+                    now.getMinutes()
+                ).padStart(2, "0");
+
+
+            return (
+                "customer-intelligence-report-" +
+                year +
+                "-" +
+                month +
+                "-" +
+                day +
+                "_" +
+                hour +
+                "-" +
+                minute +
+                ".pdf"
+            );
+
+        }
+
+
+        /* =====================================================
+           PDF DOWNLOAD
+        ===================================================== */
+
+        if (
+            downloadPdfButton &&
+            reportElement
+        ) {
+
+            downloadPdfButton.addEventListener(
+                "click",
+                async function () {
+
+                    const originalButtonContent =
+                        downloadPdfButton.innerHTML;
+
+
+                    try {
+
+                        /* -------------------------------------
+                           LOADING STATE
+                        ------------------------------------- */
+
+                        downloadPdfButton.disabled =
+                            true;
+
+                        downloadPdfButton.classList.add(
+                            "is-loading"
+                        );
+
+                        downloadPdfButton.innerHTML = `
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            <span>PDF hazırlanıyor...</span>
+                        `;
+
+
+                        /* -------------------------------------
+                           PDF EXPORT MODE
+                        ------------------------------------- */
+
+                        document.body.classList.add(
+                            "pdf-export-mode"
+                        );
+
+
+                        /* -------------------------------------
+                           WAIT FOR RENDER
+                        ------------------------------------- */
+
+                        await new Promise(
+                            function (resolve) {
+
+                                setTimeout(
+                                    resolve,
+                                    300
+                                );
+
+                            }
+                        );
+
+
+                        /* -------------------------------------
+                           PDF SETTINGS
+                        ------------------------------------- */
+
+                        const options = {
+
+                            margin: [
+                                8,
+                                8,
+                                10,
+                                8
+                            ],
+
+                            filename:
+                                createPdfFileName(),
+
+                            image: {
+
+                                type:
+                                    "jpeg",
+
+                                quality:
+                                    0.98
+
+                            },
+
+                            html2canvas: {
+
+                                scale:
+                                    2,
+
+                                useCORS:
+                                    true,
+
+                                allowTaint:
+                                    false,
+
+                                logging:
+                                    false,
+
+                                backgroundColor:
+                                    "#ffffff",
+
+                                scrollX:
+                                    0,
+
+                                scrollY:
+                                    0
+
+                            },
+
+                            jsPDF: {
+
+                                unit:
+                                    "mm",
+
+                                format:
+                                    "a4",
+
+                                orientation:
+                                    "portrait"
+
+                            },
+
+                            pagebreak: {
+
+                                mode: [
+                                    "css",
+                                    "legacy"
+                                ],
+
+                                before: [
+                                    ".report-table-card"
+                                ],
+
+                                avoid: [
+                                    ".metric-card",
+                                    ".report-summary-card",
+                                    ".report-card",
+                                    ".report-category-row",
+                                    ".report-risk-row",
+                                    ".report-table tr"
+                                ]
+
+                            }
+
+                        };
+
+
+                        /* -------------------------------------
+                           GENERATE PDF
+                        ------------------------------------- */
+
+                        await html2pdf()
+                            .set(options)
+                            .from(reportElement)
+                            .save();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "PDF oluşturma hatası:",
+                            error
+                        );
+
+                        alert(
+                            "PDF oluşturulurken bir hata oluştu. " +
+                            "Lütfen tekrar deneyin."
+                        );
+
+
+                    } finally {
+
+                        /* -------------------------------------
+                           RESTORE UI
+                        ------------------------------------- */
+
+                        document.body.classList.remove(
+                            "pdf-export-mode"
+                        );
+
+                        downloadPdfButton.disabled =
+                            false;
+
+                        downloadPdfButton.classList.remove(
+                            "is-loading"
+                        );
+
+                        downloadPdfButton.innerHTML =
+                            originalButtonContent;
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

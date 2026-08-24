@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Tahmin Geçmişi | Customer Intelligence Platform
+{% endblock %}
+
+
+{% block breadcrumb %}
+Tahmin Geçmişi
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <p class="live-label">
+            <span class="live-dot"></span>
+            PREDICTION HISTORY
+        </p>
+
+        <h1>Tahmin Geçmişi</h1>
+
+        <p class="page-subtitle">
+            Model tarafından oluşturulan tüm müşteri memnuniyeti tahminlerini,
+            risk seviyelerini ve sipariş bilgilerini inceleyin.
+        </p>
+
+    </div>
+
+
+    <div class="page-actions">
+
+        <span class="secondary-button">
+            <i class="fa-solid fa-database"></i>
+
+            {{ predictions|length }} Kayıt
+        </span>
+
+        <a
+            href="{{ url_for('prediction_page') }}"
+            class="primary-button"
+        >
+            <i class="fa-solid fa-plus"></i>
+            Yeni Tahmin
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SUMMARY CARDS
+========================================================= -->
+
+<div class="metric-grid history-metrics">
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon aqua">
+                <i class="fa-solid fa-list-check"></i>
+            </div>
+
+        </div>
+
+        <p class="metric-label">
+            Toplam Kayıt
+        </p>
+
+        <h2>
+            {{ predictions|length }}
+        </h2>
+
+        <p class="metric-note">
+            Veritabanındaki toplam tahmin
+        </p>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon green">
+                <i class="fa-solid fa-face-smile"></i>
+            </div>
+
+        </div>
+
+        <p class="metric-label">
+            Memnun Tahmin
+        </p>
+
+        <h2>
+            {{
+                predictions
+                | selectattr("prediction", "equalto", 1)
+                | list
+                | length
+            }}
+        </h2>
+
+        <p class="metric-note">
+            Model sınıfı 1 olan kayıtlar
+        </p>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon coral">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+        </div>
+
+        <p class="metric-label">
+            Yüksek Risk
+        </p>
+
+        <h2>
+            {{
+                predictions
+                | selectattr("risk_level", "equalto", "high")
+                | list
+                | length
+            }}
+        </h2>
+
+        <p class="metric-note">
+            Öncelikli incelenmesi gereken kayıtlar
+        </p>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-top">
+
+            <div class="metric-icon yellow">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+        </div>
+
+        <p class="metric-label">
+            Son Tahmin
+        </p>
+
+        <h2 class="history-last-date">
+            {% if predictions %}
+                {{ predictions[0].created_at.strftime("%d.%m") }}
+            {% else %}
+                —
+            {% endif %}
+        </h2>
+
+        <p class="metric-note">
+            Son tahmin tarihi
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     HISTORY TABLE
+========================================================= -->
+
+<section class="dashboard-card recent-card history-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <p class="card-label">
+                MODEL KAYITLARI
+            </p>
+
+            <h3>
+                Tüm Tahminler
+            </h3>
+
+        </div>
+
+
+        <div class="history-toolbar">
+
+            <div class="history-search">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    id="history-search"
+                    type="search"
+                    placeholder="Tahmin ID, eyalet veya kategori ara..."
+                >
+
+            </div>
+
+
+            <select
+                id="history-risk-filter"
+                class="history-filter"
+            >
+
+                <option value="all">
+                    Tüm Riskler
+                </option>
+
+                <option value="low">
+                    Düşük Risk
+                </option>
+
+                <option value="medium">
+                    Orta Risk
+                </option>
+
+                <option value="high">
+                    Yüksek Risk
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    {% if predictions %}
+
+    <div class="table-wrapper">
+
+        <table
+            class="prediction-table history-table"
+            id="history-table"
+        >
+
+            <thead>
+
+            <tr>
+                <th>Tahmin ID</th>
+                <th>Tarih</th>
+                <th>Eyalet</th>
+                <th>Kategori</th>
+                <th>Ödeme</th>
+                <th>Tutar</th>
+                <th>Gecikme</th>
+                <th>Sonuç</th>
+                <th>Risk</th>
+                <th>Memnuniyet</th>
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for item in predictions %}
+
+            <tr
+                data-risk="{{ item.risk_level }}"
+                data-search="
+                    {{ item.prediction_id }}
+                    {{ item.customer_state or '' }}
+                    {{ item.primary_product_category or '' }}
+                    {{ item.payment_type or '' }}
+                "
+            >
+
+                <td class="mono-cell">
+                    {{ item.prediction_id }}
+                </td>
+
+
+                <td>
+                    {% if item.created_at %}
+                        {{ item.created_at.strftime("%d.%m.%Y %H:%M") }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+
+                <td>
+                    {{ item.customer_state or "—" }}
+                </td>
+
+
+                <td>
+                    {% if item.primary_product_category %}
+                        {{
+                            item.primary_product_category
+                            | replace("_", " ")
+                            | title
+                        }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+
+                <td>
+                    {% if item.payment_type %}
+                        {{
+                            item.payment_type
+                            | replace("_", " ")
+                            | title
+                        }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+
+                <td>
+                    {% if item.total_price is not none %}
+                        R$ {{ "%.2f"|format(item.total_price) }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+
+                <td>
+                    {% if item.delivery_delay_days is not none %}
+
+                        {% if item.delivery_delay_days > 0 %}
+
+                            <span class="history-delay danger">
+                                +{{ "%.1f"|format(item.delivery_delay_days) }} gün
+                            </span>
+
+                        {% elif item.delivery_delay_days < 0 %}
+
+                            <span class="history-delay success">
+                                {{ "%.1f"|format(item.delivery_delay_days) }} gün
+                            </span>
+
+                        {% else %}
+
+                            <span class="history-delay neutral">
+                                Zamanında
+                            </span>
+
+                        {% endif %}
+
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+
+
+                <td>
+
+                    {% if item.prediction == 1 %}
+
+                        <span class="status-badge success">
+                            Memnun
+                        </span>
+
+                    {% else %}
+
+                        <span class="status-badge danger">
+                            Memnun Değil
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+
+                    {% if item.risk_level == "low" %}
+
+                        <span class="risk-badge low">
+                            Düşük
+                        </span>
+
+                    {% elif item.risk_level == "medium" %}
+
+                        <span class="risk-badge medium">
+                            Orta
+                        </span>
+
+                    {% else %}
+
+                        <span class="risk-badge high">
+                            Yüksek
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <td class="probability-cell">
+
+                    {{ "%.1f"|format(
+                        item.satisfied_probability
+                    ) }}%
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="history-no-results"
+        id="history-no-results"
+        hidden
+    >
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <strong>
+            Eşleşen kayıt bulunamadı
+        </strong>
+
+        <p>
+            Arama ifadesini veya risk filtresini değiştirin.
+        </p>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="empty-dashboard-state history-empty">
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+
+        <strong>
+            Henüz tahmin geçmişi yok
+        </strong>
+
+        <p>
+            İlk model tahmininizi oluşturduğunuzda kayıt burada görünecek.
+        </p>
+
+        <a
+            href="{{ url_for('prediction_page') }}"
+            class="primary-button"
+        >
+            <i class="fa-solid fa-plus"></i>
+            İlk Tahmini Oluştur
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+const historySearch =
+    document.getElementById("history-search");
+
+const historyRiskFilter =
+    document.getElementById("history-risk-filter");
+
+const historyTable =
+    document.getElementById("history-table");
+
+const historyNoResults =
+    document.getElementById("history-no-results");
+
+
+function filterHistoryTable() {
+
+    if (!historyTable) {
+        return;
+    }
+
+    const searchValue =
+        historySearch
+            ? historySearch.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+    const selectedRisk =
+        historyRiskFilter
+            ? historyRiskFilter.value
+            : "all";
+
+
+    const rows =
+        historyTable.querySelectorAll(
+            "tbody tr"
+        );
+
+
+    let visibleRows = 0;
+
+
+    rows.forEach(
+        function (row) {
+
+            const searchableText =
+                (
+                    row.dataset.search || ""
+                )
+                .toLowerCase();
+
+
+            const rowRisk =
+                row.dataset.risk || "";
+
+
+            const matchesSearch =
+                !searchValue ||
+                searchableText.includes(
+                    searchValue
+                );
+
+
+            const matchesRisk =
+                selectedRisk === "all" ||
+                rowRisk === selectedRisk;
+
+
+            const visible =
+                matchesSearch &&
+                matchesRisk;
+
+
+            row.hidden =
+                !visible;
+
+
+            if (visible) {
+                visibleRows++;
+            }
+
+        }
+    );
+
+
+    if (historyNoResults) {
+
+        historyNoResults.hidden =
+            visibleRows !== 0;
+    }
+
+}
+
+
+if (historySearch) {
+
+    historySearch.addEventListener(
+        "input",
+        filterHistoryTable
+    );
+}
+
+
+if (historyRiskFilter) {
+
+    historyRiskFilter.addEventListener(
+        "change",
+        filterHistoryTable
+    );
+}
+
+</script>
+
+{% endblock %}
